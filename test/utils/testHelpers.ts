@@ -31,17 +31,31 @@ export function cleanupTestFiles(filePaths: string[]): void {
  * @returns Test user record
  */
 export async function getOrCreateTestUser(): Promise<any> {
-  let testUser = await User.findOne({ where: { email: 'test@mantrify.com' } });
-
-  if (!testUser) {
-    testUser = await User.create({
-      email: 'test@mantrify.com',
-      password: '$2b$10$test.hash.here',
-      isEmailVerified: true,
-      isAdmin: false,
-    });
-    logger.info(`Created test user: ${testUser.id}`);
+  // First try to get the admin user if it exists
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    const adminUser = await User.findOne({ where: { email: adminEmail } });
+    if (adminUser) {
+      logger.info(`Using admin user for testing: ${adminUser.email}`);
+      return adminUser;
+    }
   }
+
+  // Otherwise try to get any existing user
+  let testUser = await User.findOne();
+  if (testUser) {
+    logger.info(`Using existing user for testing: ${testUser.email}`);
+    return testUser;
+  }
+
+  // If no users exist, create a test user
+  testUser = await User.create({
+    email: 'test@mantrify.com',
+    password: '$2b$10$test.hash.here',
+    isEmailVerified: true,
+    isAdmin: false,
+  });
+  logger.info(`Created test user: ${testUser.id}`);
 
   return testUser;
 }
