@@ -71,5 +71,16 @@ Sequelize will handle the createdAt and updatedAt columns with timestamps: true.
 | ----------- | ------ | ---- | ------------------------------------------------------------------------- |
 | id          | id     | NO   | PK                                                                        |
 | userId      | userId | NO   | FK → users.id                                                             |
-| status      | string | NO   | “queued”, “started”, "elevenlabs", "concatenator" or "done"               |
+| status      | string | NO   | "queued", "started", "elevenlabs", "concatenator" or "done"               |
 | jobFilename | string | NO   | csv filename of the job file stored in PATH_QUEUER/user_request_csv_files |
+
+### Table: `SoundFiles`
+
+#### Columns
+
+| Column      | Type   | Null | Notes                      |
+| ----------- | ------ | ---- | -------------------------- |
+| id          | id     | NO   | PK                         |
+| name        | string | NO   |                            |
+| description | string | YES  |                            |
+| filename    | string | NO   | filename of the sound file |
