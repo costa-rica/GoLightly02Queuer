@@ -215,17 +215,17 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 12: Jest Integration Tests
 
-- [ ] Set up Jest testing framework
-  - [ ] Install Jest and dependencies: `npm install --save-dev jest @types/jest ts-jest`
-  - [ ] Create Jest configuration: `npx ts-jest config:init`
-  - [ ] Configure jest.config.js for TypeScript
-  - [ ] Add test script to package.json: `"test": "jest"`
-  - [ ] Create test/ directory at project root
-- [ ] Create test utilities in `test/utils/`
-  - [ ] Create database cleanup helper (delete queue records)
-  - [ ] Create file cleanup helper (delete CSV and MP3 files)
-  - [ ] Create test data generators (sample mantraArray data)
-  - [ ] Create shared test configuration
+- [x] Set up Jest testing framework
+  - [x] Install Jest and dependencies: `npm install --save-dev jest @types/jest ts-jest`
+  - [x] Create Jest configuration: `npx ts-jest config:init`
+  - [x] Configure jest.config.js for TypeScript
+  - [x] Add test script to package.json: `"test": "jest"`
+  - [x] Create test/ directory at project root
+- [x] Create test utilities in `test/utils/`
+  - [x] Create database cleanup helper (delete queue records)
+  - [x] Create file cleanup helper (delete CSV and MP3 files)
+  - [x] Create test data generators (sample mantraArray data)
+  - [x] Create shared test configuration
 - [ ] Create ElevenLabs integration test in `test/elevenlabs.test.ts`
   - [ ] Set up test with database connection
   - [ ] Create test mantraArray with short text (e.g., "Test mantra one")
