@@ -1,0 +1,371 @@
+# Mantrify01Queuer - Implementation TODO List
+
+This TODO list breaks down the implementation of Mantrify01Queuer into manageable phases. Check off items as `[x]` when completed. Commit changes to git after completing each phase.
+
+## Phase 1: Project Foundation
+
+- [ ] Initialize TypeScript project with Express
+  - [ ] Run `npm init -y`
+  - [ ] Install core dependencies: `express`, `dotenv`, `typescript`, `@types/node`, `@types/express`
+  - [ ] Install dev dependencies: `ts-node`, `nodemon`, `@types/dotenv`
+- [ ] Create folder structure
+  - [ ] Create `src/` directory
+  - [ ] Create `src/types/` directory
+  - [ ] Create `src/modules/` directory
+  - [ ] Create `src/routes/` directory
+- [ ] Configure TypeScript
+  - [ ] Create `tsconfig.json` with appropriate settings
+  - [ ] Set output directory to `dist/`
+  - [ ] Configure module resolution
+- [ ] Set up package.json scripts
+  - [ ] Add `build` script: `tsc`
+  - [ ] Add `start` script: `node dist/index.js`
+  - [ ] Add `dev` script: `nodemon --exec ts-node src/index.ts`
+- [ ] Create .env file from requirements
+  - [ ] Copy all environment variables from docs/REQUIREMENTS.md
+  - [ ] Add PATH_TO_ELEVENLABS_SERVICE=/Users/nick/Documents/RequesterElevenLabs01
+  - [ ] Add PATH_TO_AUDIO_FILE_CONCATENATOR=/Users/nick/Documents/AudioFileConcatenator01
+  - [ ] Verify all paths exist or create them
+- [ ] Create basic Express app structure in `src/index.ts`
+  - [ ] Import express and dotenv
+  - [ ] Load environment variables
+  - [ ] Create Express app instance
+  - [ ] Set up basic middleware (json parsing)
+  - [ ] Add placeholder route
+  - [ ] Start server on PORT
+
+## Phase 2: Database Integration
+
+- [ ] Install Mantrify01Db package
+  - [ ] Install from /Users/nick/Documents/Mantrify01Db
+  - [ ] Run: `npm install file:/Users/nick/Documents/Mantrify01Db`
+  - [ ] Verify package appears in package.json dependencies
+- [ ] Create database module in `src/modules/database.ts`
+  - [ ] Import Mantrify01Db
+  - [ ] Initialize database connection
+  - [ ] Export database instance and models
+- [ ] Test database connection
+  - [ ] Verify connection to Mantrify01Db database
+  - [ ] Verify Queue table is accessible
+  - [ ] Test basic CRUD operations on Queue table
+- [ ] Create Queue model interface in `src/types/index.ts`
+  - [ ] Define QueueRecord interface matching schema
+  - [ ] Define QueueStatus type: "queued" | "started" | "elevenlabs" | "concatenator" | "done"
+
+## Phase 3: Logging Setup
+
+- [ ] Install Winston: `npm install winston`
+- [ ] Create logger module in `src/modules/logger.ts`
+  - [ ] Validate required env variables (NODE_ENV, NAME_APP, PATH_TO_LOGS)
+  - [ ] Configure Winston transports based on NODE_ENV
+  - [ ] Development: console only
+  - [ ] Testing: console AND file
+  - [ ] Production: file only
+  - [ ] Set up file rotation with LOG_MAX_SIZE and LOG_MAX_FILES
+  - [ ] Export singleton logger instance
+- [ ] Update src/index.ts to use logger
+  - [ ] Import logger before other modules
+  - [ ] Replace any console.log with logger.info
+  - [ ] Implement async IIFE pattern for early exit scenarios
+- [ ] Test logging in all three modes
+  - [ ] Test development mode (console only)
+  - [ ] Test testing mode (console + file)
+  - [ ] Test production mode (file only)
+  - [ ] Verify log rotation works
+
+## Phase 4: Core Type Definitions
+
+- [ ] Define types in `src/types/index.ts`
+  - [ ] MantraRequestBody interface (userId required, plus filenameCsv | mantraArray)
+  - [ ] MantraArrayElement interface (id, text, voice_id, speed, pause_duration, sound_file)
+  - [ ] ElevenLabsCsvRow interface (id, text, voice_id, speed)
+  - [ ] AudioConcatenatorCsvRow interface (id, audio_file_name_and_path, pause_duration)
+  - [ ] QueueRecord interface
+  - [ ] ChildProcessResult interface
+
+## Phase 5: CSV and File Handler Modules
+
+- [ ] Create CSV parser module in `src/modules/csvParser.ts`
+  - [ ] Install csv-parse: `npm install csv-parse`
+  - [ ] Create function to read CSV file from filenameCsv
+  - [ ] Create function to parse mantraArray
+  - [ ] Return normalized data structure
+  - [ ] Handle validation and errors
+- [ ] Create CSV writer module in `src/modules/csvWriter.ts`
+  - [ ] Install csv-stringify: `npm install csv-stringify`
+  - [ ] Create function to write ElevenLabs CSV format
+  - [ ] Create function to write AudioConcatenator CSV format
+  - [ ] Generate unique filenames with timestamps
+  - [ ] Save to appropriate PATH_QUEUER subdirectories
+- [ ] Create file manager module in `src/modules/fileManager.ts`
+  - [ ] Create function to ensure directories exist
+  - [ ] Create function to generate unique job filenames
+  - [ ] Create function to validate file paths
+  - [ ] Create cleanup functions for temporary files
+
+## Phase 6: Queue Management Module
+
+- [ ] Create queue manager in `src/modules/queueManager.ts`
+  - [ ] Create function to add new job to queue (status: "queued")
+  - [ ] Create function to update job status
+  - [ ] Create function to get next queued job
+  - [ ] Create function to check if queue is processing
+  - [ ] Implement FIFO queue processing logic
+  - [ ] Handle concurrent request scenarios
+  - [ ] Log all queue operations
+
+## Phase 7: Child Process Management
+
+- [ ] Create child process spawner in `src/modules/childProcessSpawner.ts`
+  - [ ] Create generic spawn function with logging
+  - [ ] Capture stdout and stderr
+  - [ ] Handle process completion and errors
+  - [ ] Pass environment variables to child process
+  - [ ] Return process result with exit code
+- [ ] Create ElevenLabs handler in `src/modules/elevenLabsHandler.ts`
+  - [ ] Create function to generate ElevenLabs CSV from parsed data
+  - [ ] Create function to spawn RequesterElevenLabs01
+  - [ ] Use PATH_TO_ELEVENLABS_SERVICE env variable for child process location
+  - [ ] Pass NAME_CHILD_PROCESS_ELEVENLABS as NAME_APP to child
+  - [ ] Parse stdout for "Audio file created successfully:" lines
+  - [ ] Extract file paths from output
+  - [ ] Return array of generated MP3 file paths
+  - [ ] Handle errors and log appropriately
+- [ ] Create AudioConcatenator handler in `src/modules/audioConcatenatorHandler.ts`
+  - [ ] Create function to generate AudioConcatenator CSV
+  - [ ] Map ElevenLabs output files to concatenator input
+  - [ ] Handle pause_duration and sound_file fields
+  - [ ] Create function to spawn AudioFileConcatenator01
+  - [ ] Use PATH_TO_AUDIO_FILE_CONCATENATOR env variable for child process location
+  - [ ] Pass NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR as NAME_APP to child
+  - [ ] Parse stdout for final output file path
+  - [ ] Return final MP3 file path
+  - [ ] Handle errors and log appropriately
+
+## Phase 8: Workflow Orchestrator
+
+- [ ] Create workflow orchestrator in `src/modules/workflowOrchestrator.ts`
+  - [ ] Create main orchestration function
+  - [ ] Step 1: Parse input (filenameCsv or mantraArray)
+  - [ ] Step 2: Create and save queue record (status: "queued")
+  - [ ] Step 3: Update status to "started"
+  - [ ] Step 4: Generate ElevenLabs CSV
+  - [ ] Step 5: Update status to "elevenlabs"
+  - [ ] Step 6: Spawn ElevenLabs child process and wait
+  - [ ] Step 7: Parse ElevenLabs output files
+  - [ ] Step 8: Update status to "concatenator"
+  - [ ] Step 9: Generate AudioConcatenator CSV
+  - [ ] Step 10: Spawn AudioConcatenator child process and wait
+  - [ ] Step 11: Get final output file path
+  - [ ] Step 12: Update status to "done"
+  - [ ] Step 13: Return final file path
+  - [ ] Handle errors at each step and update queue status
+  - [ ] Log completion with final file path
+
+## Phase 9: API Routes
+
+- [ ] Create mantras router in `src/routes/mantras.ts`
+  - [ ] Import express Router
+  - [ ] Create POST /new endpoint
+  - [ ] Validate request body (filenameCsv XOR mantraArray, plus userId)
+  - [ ] Extract userId from request body
+  - [ ] Call workflow orchestrator
+  - [ ] Return success response with job details
+  - [ ] Handle and format errors per ERROR_REQUIREMENTS.md
+- [ ] Integrate router in src/index.ts
+  - [ ] Import mantras router
+  - [ ] Mount router at /mantras path
+  - [ ] Test route is accessible
+
+## Phase 10: Error Handling
+
+- [ ] Create error handler middleware in `src/modules/errorHandler.ts`
+  - [ ] Create standard error response format
+  - [ ] Include: code, message, details, status
+  - [ ] Sanitize details in production mode
+  - [ ] Never expose stack traces, DB errors, or sensitive data in production
+- [ ] Create custom error classes in `src/modules/errors.ts`
+  - [ ] ValidationError (400)
+  - [ ] FileNotFoundError (404)
+  - [ ] ChildProcessError (500)
+  - [ ] QueueError (500)
+  - [ ] DatabaseError (500)
+- [ ] Add error middleware to src/index.ts
+  - [ ] Import error handler
+  - [ ] Add as last middleware
+  - [ ] Test error responses match requirements
+- [ ] Update all modules to throw custom errors
+  - [ ] Replace generic errors with custom error classes
+  - [ ] Add appropriate error codes
+  - [ ] Include helpful error messages
+
+## Phase 11: Request Validation
+
+- [ ] Create validation module in `src/modules/validator.ts`
+  - [ ] Validate POST /mantras/new body structure
+  - [ ] Ensure filenameCsv XOR mantraArray (not both)
+  - [ ] Validate filenameCsv points to existing file
+  - [ ] Validate mantraArray structure if present
+  - [ ] Validate CSV row format (id, text, voice_id, speed, pause_duration, sound_file)
+  - [ ] Validate field types and constraints
+  - [ ] Return detailed validation errors
+- [ ] Integrate validation in mantras route
+  - [ ] Call validation before workflow
+  - [ ] Return 400 errors for validation failures
+
+## Phase 12: Jest Integration Tests
+
+- [ ] Set up Jest testing framework
+  - [ ] Install Jest and dependencies: `npm install --save-dev jest @types/jest ts-jest`
+  - [ ] Create Jest configuration: `npx ts-jest config:init`
+  - [ ] Configure jest.config.js for TypeScript
+  - [ ] Add test script to package.json: `"test": "jest"`
+  - [ ] Create test/ directory at project root
+- [ ] Create test utilities in `test/utils/`
+  - [ ] Create database cleanup helper (delete queue records)
+  - [ ] Create file cleanup helper (delete CSV and MP3 files)
+  - [ ] Create test data generators (sample mantraArray data)
+  - [ ] Create shared test configuration
+- [ ] Create ElevenLabs integration test in `test/elevenlabs.test.ts`
+  - [ ] Set up test with database connection
+  - [ ] Create test mantraArray with short text (e.g., "Test mantra one")
+  - [ ] Include userId in test request body
+  - [ ] Call workflow orchestrator with mantraArray
+  - [ ] Verify queue record created in database
+  - [ ] Verify ElevenLabs child process runs successfully
+  - [ ] Verify MP3 file created at expected path
+  - [ ] Store output file path for AudioConcatenator test
+  - [ ] Verify queue status updated to appropriate stage
+  - [ ] Clean up: delete queue record from database
+  - [ ] Clean up: delete all generated CSV files
+  - [ ] Clean up: delete all generated MP3 files from microservices
+- [ ] Create AudioConcatenator integration test in `test/audioConcatenator.test.ts`
+  - [ ] Set up test with database connection
+  - [ ] Create test mantraArray using output from ElevenLabs test
+  - [ ] Include userId in test request body
+  - [ ] Include pause_duration to test silence generation
+  - [ ] Call workflow orchestrator with mantraArray
+  - [ ] Verify queue record created in database
+  - [ ] Verify ElevenLabs child process runs (for any text entries)
+  - [ ] Verify AudioConcatenator child process runs successfully
+  - [ ] Verify final concatenated MP3 file created
+  - [ ] Verify queue status updated to "done"
+  - [ ] Clean up: delete queue record from database
+  - [ ] Clean up: delete all generated CSV files
+  - [ ] Clean up: delete all generated MP3 files from microservices
+  - [ ] Clean up: delete temporary silence files created by AudioConcatenator
+- [ ] Create end-to-end test in `test/e2e.test.ts`
+  - [ ] Set up test with database connection
+  - [ ] Test complete workflow from mantraArray to final MP3
+  - [ ] Include multiple text entries, pauses, and optional sound files
+  - [ ] Verify all queue status transitions
+  - [ ] Verify all generated files exist
+  - [ ] Clean up: delete queue records from database
+  - [ ] Clean up: delete all generated CSV files
+  - [ ] Clean up: delete all generated MP3 files from microservices
+  - [ ] Clean up: delete temporary files created during processing
+- [ ] Run all tests and verify passing
+  - [ ] Run: `npm test`
+  - [ ] Verify all tests pass
+  - [ ] Verify database cleanup occurs properly (no leftover queue records)
+  - [ ] Verify file cleanup occurs properly (no leftover CSV or MP3 files)
+  - [ ] Review test coverage
+
+## Phase 13: Manual Testing & Refinement
+
+- [ ] Manual testing - single request with filenameCsv
+  - [ ] Create test CSV file in PATH_QUEUER/user_request_csv_files/
+  - [ ] POST to /mantras/new with filenameCsv
+  - [ ] Verify queue record created
+  - [ ] Verify ElevenLabs CSV generated correctly
+  - [ ] Verify ElevenLabs child process runs
+  - [ ] Verify AudioConcatenator CSV generated correctly
+  - [ ] Verify AudioConcatenator child process runs
+  - [ ] Verify final MP3 file created
+  - [ ] Verify queue status updated to "done"
+  - [ ] Verify logs are complete
+- [ ] Manual testing - single request with mantraArray
+  - [ ] POST to /mantras/new with mantraArray
+  - [ ] Verify same workflow completes successfully
+- [ ] Manual testing - queue processing
+  - [ ] Submit multiple requests quickly
+  - [ ] Verify FIFO processing order
+  - [ ] Verify no race conditions
+- [ ] Manual testing - error scenarios
+  - [ ] Invalid CSV format
+  - [ ] Missing file references
+  - [ ] Child process failures
+  - [ ] Verify error responses match requirements
+  - [ ] Verify queue status reflects errors
+- [ ] Review logging output
+  - [ ] Verify appropriate log levels used
+  - [ ] Verify child process logs separate from parent
+  - [ ] Verify log rotation works
+- [ ] Code review
+  - [ ] Ensure modular structure maintained
+  - [ ] Check for security vulnerabilities (injection attacks, etc.)
+  - [ ] Verify no sensitive data in logs
+  - [ ] Ensure error handling is comprehensive
+
+## Phase 14: Documentation
+
+- [ ] Create README.md following docs/README-format.md
+  - [ ] Project Overview section (TypeScript + Express + SQLite)
+  - [ ] Setup section (include Mantrify01Db installation)
+  - [ ] Usage section (API endpoint examples)
+  - [ ] Project Structure section (tree view)
+  - [ ] .env section (list all variables)
+  - [ ] Child Processes section (RequesterElevenLabs01 and AudioFileConcatenator01)
+  - [ ] References section (link to docs)
+- [ ] Review all documentation
+  - [ ] Ensure REQUIREMENTS.md is up to date
+  - [ ] Verify all referenced files are correct
+- [ ] Final commit
+  - [ ] Review all changes
+  - [ ] Create final commit with complete implementation
+
+## Additional Notes
+
+### Environment Variables to Verify
+
+Before starting, ensure these .env variables and paths exist:
+
+- PATH_PROJECT_RESOURCES
+- PATH_QUEUER (with subdirectories: user_request_csv_files, eleven_labs_csv_files, audio_csv_files)
+- PATH_TO_LOGS
+- PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT
+- PATH_USER_ELEVENLABS_CSV_FILES
+- PATH_AUDIO_CSV_FILE
+- PATH_MP3_OUTPUT
+- PATH_TO_ELEVENLABS_SERVICE (confirmed: /Users/nick/Documents/RequesterElevenLabs01)
+- PATH_TO_AUDIO_FILE_CONCATENATOR (confirmed: /Users/nick/Documents/AudioFileConcatenator01)
+
+If any paths don't exist, they should be created during Phase 1.
+
+### Custom Package Dependencies
+
+- Mantrify01Db: Located at /Users/nick/Documents/Mantrify01Db, install with `npm install file:/Users/nick/Documents/Mantrify01Db`
+- RequesterElevenLabs01: Located at /Users/nick/Documents/RequesterElevenLabs01 (PATH_TO_ELEVENLABS_SERVICE)
+- AudioFileConcatenator01: Located at /Users/nick/Documents/AudioFileConcatenator01 (PATH_TO_AUDIO_FILE_CONCATENATOR)
+
+### Key Workflow Decisions
+
+- CSV files generated for child processes should be stored in appropriate subdirectories of PATH_QUEUER
+- Child process log files should use NAME_CHILD_PROCESS_* environment variables
+- Queue table updates should happen synchronously to maintain FIFO order
+- Error handling should gracefully handle child process failures and update queue status
+- userId is passed in the request body (not from JWT/authentication)
+- Child processes are spawned from paths defined in PATH_TO_ELEVENLABS_SERVICE and PATH_TO_AUDIO_FILE_CONCATENATOR
+
+### Testing Approach
+
+- Jest tests simulate API requests with mantraArray format
+- Tests use real database and create/cleanup queue records
+- ElevenLabs test uses short text for quick execution
+- AudioConcatenator test uses ElevenLabs test output file
+- All tests MUST clean up after completion:
+  - Delete all queue records from database
+  - Delete all CSV files generated for microservices
+  - Delete all MP3 files created by ElevenLabs
+  - Delete all MP3 files created by AudioConcatenator
+  - Delete any temporary files created during processing

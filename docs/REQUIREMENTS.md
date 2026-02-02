@@ -39,12 +39,14 @@ PATH_TO_LOGS=/Users/nick/Documents/_logs
 
 # Child Process: ElevenLabs
 NAME_CHILD_PROCESS_ELEVENLABS=RequesterElevenLabs01
+PATH_TO_ELEVENLABS_SERVICE=/Users/nick/Documents/RequesterElevenLabs01
 PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses
 PATH_USER_ELEVENLABS_CSV_FILES=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_user_csv_files
 API_KEY_ELEVEN_LABS=sk_1c2f764a3f6355b5d85c178ae2c2774795ab92e0409f5ad8
 
 # Child Process: Audio Processing
 NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR=AudioFileConcatenator01
+PATH_TO_AUDIO_FILE_CONCATENATOR=/Users/nick/Documents/AudioFileConcatenator01
 PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/Mantrify/audio_concatenator_input
 PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/audio_results
 ```
@@ -58,7 +60,7 @@ The queuer will be connected to a SQLite / Sequelize database. using the custom 
 I want to try an approach using a table in the database called queue. The table will have the following columns:
 
 - id: this will be the integer value assigned to the latest job.
-- userId: this will come from the decoded token
+- userId: this will be in the body of requests
 - status: “queued”, “started”, "elevenlabs", "concatenator" or "done"
 - jobFilename: this will be the csv filename of the job file stored in PATH_QUEUER/user_request_csv_files
 - createdAt: timestamp of when the job was created (Sequelize will handle this)
@@ -234,3 +236,11 @@ Use the requirements in the docs/ERROR_REQUIREMENTS.md file for returning error 
 ## Readme
 
 Create a README.md file using the requirements in the docs/README-format.md file.
+
+## Tests
+
+Let’s add tests using jest that will use the database to create a request to each of the microservices. The ElevenLabs test should be a short text and then a separate one for the Audio concatenator that will use the ElevenLabs test result and file.
+
+After the test is completed delete the database rows that is makes and the files created from running the microservices.
+
+These tests should be stored in a test/ directory at the root of the project. With that will get passed like a request is made from the API with the `mantraArray`.
