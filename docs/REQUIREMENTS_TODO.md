@@ -116,31 +116,31 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 7: Child Process Management
 
-- [ ] Create child process spawner in `src/modules/childProcessSpawner.ts`
-  - [ ] Create generic spawn function with logging
-  - [ ] Capture stdout and stderr
-  - [ ] Handle process completion and errors
-  - [ ] Pass environment variables to child process
-  - [ ] Return process result with exit code
-- [ ] Create ElevenLabs handler in `src/modules/elevenLabsHandler.ts`
-  - [ ] Create function to generate ElevenLabs CSV from parsed data
-  - [ ] Create function to spawn RequesterElevenLabs01
-  - [ ] Use PATH_TO_ELEVENLABS_SERVICE env variable for child process location
-  - [ ] Pass NAME_CHILD_PROCESS_ELEVENLABS as NAME_APP to child
-  - [ ] Parse stdout for "Audio file created successfully:" lines
-  - [ ] Extract file paths from output
-  - [ ] Return array of generated MP3 file paths
-  - [ ] Handle errors and log appropriately
-- [ ] Create AudioConcatenator handler in `src/modules/audioConcatenatorHandler.ts`
-  - [ ] Create function to generate AudioConcatenator CSV
-  - [ ] Map ElevenLabs output files to concatenator input
-  - [ ] Handle pause_duration and sound_file fields
-  - [ ] Create function to spawn AudioFileConcatenator01
-  - [ ] Use PATH_TO_AUDIO_FILE_CONCATENATOR env variable for child process location
-  - [ ] Pass NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR as NAME_APP to child
-  - [ ] Parse stdout for final output file path
-  - [ ] Return final MP3 file path
-  - [ ] Handle errors and log appropriately
+- [x] Create child process spawner in `src/modules/childProcessSpawner.ts`
+  - [x] Create generic spawn function with logging
+  - [x] Capture stdout and stderr
+  - [x] Handle process completion and errors
+  - [x] Pass environment variables to child process
+  - [x] Return process result with exit code
+- [x] Create ElevenLabs handler in `src/modules/elevenLabsHandler.ts`
+  - [x] Create function to generate ElevenLabs CSV from parsed data
+  - [x] Create function to spawn RequesterElevenLabs01
+  - [x] Use PATH_TO_ELEVENLABS_SERVICE env variable for child process location
+  - [x] Pass NAME_CHILD_PROCESS_ELEVENLABS as NAME_APP to child
+  - [x] Parse stdout for "Audio file created successfully:" lines
+  - [x] Extract file paths from output
+  - [x] Return array of generated MP3 file paths
+  - [x] Handle errors and log appropriately
+- [x] Create AudioConcatenator handler in `src/modules/audioConcatenatorHandler.ts`
+  - [x] Create function to generate AudioConcatenator CSV
+  - [x] Map ElevenLabs output files to concatenator input
+  - [x] Handle pause_duration and sound_file fields
+  - [x] Create function to spawn AudioFileConcatenator01
+  - [x] Use PATH_TO_AUDIO_FILE_CONCATENATOR env variable for child process location
+  - [x] Pass NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR as NAME_APP to child
+  - [x] Parse stdout for final output file path
+  - [x] Return final MP3 file path
+  - [x] Handle errors and log appropriately
 
 ## Phase 8: Workflow Orchestrator
 
