@@ -7,6 +7,8 @@ dotenv.config();
 // Import logger after dotenv (logger validates env vars)
 import logger from './modules/logger';
 import { sequelize } from './modules/database';
+import { errorHandler, notFoundHandler } from './modules/errorHandler';
+import mantrasRouter from './routes/mantras';
 
 // Test database connection and sync
 async function initializeDatabase() {
@@ -46,6 +48,15 @@ app.get('/', (req: Request, res: Response) => {
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
+
+// API Routes
+app.use('/mantras', mantrasRouter);
+
+// 404 handler for undefined routes
+app.use(notFoundHandler);
+
+// Error handler middleware (must be last)
+app.use(errorHandler);
 
 // Start server
 async function startServer() {

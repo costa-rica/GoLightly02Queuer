@@ -164,18 +164,18 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 9: API Routes
 
-- [ ] Create mantras router in `src/routes/mantras.ts`
-  - [ ] Import express Router
-  - [ ] Create POST /new endpoint
-  - [ ] Validate request body (filenameCsv XOR mantraArray, plus userId)
-  - [ ] Extract userId from request body
-  - [ ] Call workflow orchestrator
-  - [ ] Return success response with job details
-  - [ ] Handle and format errors per ERROR_REQUIREMENTS.md
-- [ ] Integrate router in src/index.ts
-  - [ ] Import mantras router
-  - [ ] Mount router at /mantras path
-  - [ ] Test route is accessible
+- [x] Create mantras router in `src/routes/mantras.ts`
+  - [x] Import express Router
+  - [x] Create POST /new endpoint
+  - [x] Validate request body (filenameCsv XOR mantraArray, plus userId)
+  - [x] Extract userId from request body
+  - [x] Call workflow orchestrator
+  - [x] Return success response with job details
+  - [x] Handle and format errors per ERROR_REQUIREMENTS.md
+- [x] Integrate router in src/index.ts
+  - [x] Import mantras router
+  - [x] Mount router at /mantras path
+  - [x] Test route is accessible
 
 ## Phase 10: Error Handling
 
@@ -201,17 +201,17 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 11: Request Validation
 
-- [ ] Create validation module in `src/modules/validator.ts`
-  - [ ] Validate POST /mantras/new body structure
-  - [ ] Ensure filenameCsv XOR mantraArray (not both)
-  - [ ] Validate filenameCsv points to existing file
-  - [ ] Validate mantraArray structure if present
-  - [ ] Validate CSV row format (id, text, voice_id, speed, pause_duration, sound_file)
-  - [ ] Validate field types and constraints
-  - [ ] Return detailed validation errors
-- [ ] Integrate validation in mantras route
-  - [ ] Call validation before workflow
-  - [ ] Return 400 errors for validation failures
+- [x] Create validation module in `src/modules/validator.ts`
+  - [x] Validate POST /mantras/new body structure
+  - [x] Ensure filenameCsv XOR mantraArray (not both)
+  - [x] Validate filenameCsv points to existing file
+  - [x] Validate mantraArray structure if present
+  - [x] Validate CSV row format (id, text, voice_id, speed, pause_duration, sound_file)
+  - [x] Validate field types and constraints
+  - [x] Return detailed validation errors
+- [x] Integrate validation in mantras route
+  - [x] Call validation before workflow
+  - [x] Return 400 errors for validation failures
 
 ## Phase 12: Jest Integration Tests
 
