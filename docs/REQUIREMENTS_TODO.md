@@ -36,21 +36,21 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 2: Database Integration
 
-- [ ] Install Mantrify01Db package
-  - [ ] Install from /Users/nick/Documents/Mantrify01Db
-  - [ ] Run: `npm install file:/Users/nick/Documents/Mantrify01Db`
-  - [ ] Verify package appears in package.json dependencies
-- [ ] Create database module in `src/modules/database.ts`
-  - [ ] Import Mantrify01Db
-  - [ ] Initialize database connection
-  - [ ] Export database instance and models
-- [ ] Test database connection
-  - [ ] Verify connection to Mantrify01Db database
-  - [ ] Verify Queue table is accessible
-  - [ ] Test basic CRUD operations on Queue table
-- [ ] Create Queue model interface in `src/types/index.ts`
-  - [ ] Define QueueRecord interface matching schema
-  - [ ] Define QueueStatus type: "queued" | "started" | "elevenlabs" | "concatenator" | "done"
+- [x] Install Mantrify01Db package
+  - [x] Install from /Users/nick/Documents/Mantrify01Db
+  - [x] Run: `npm install file:/Users/nick/Documents/Mantrify01Db`
+  - [x] Verify package appears in package.json dependencies
+- [x] Create database module in `src/modules/database.ts`
+  - [x] Import Mantrify01Db
+  - [x] Initialize database connection
+  - [x] Export database instance and models
+- [x] Test database connection
+  - [x] Verify connection to Mantrify01Db database
+  - [x] Verify Queue table is accessible
+  - [x] Test basic CRUD operations on Queue table
+- [x] Create Queue model interface in `src/types/index.ts`
+  - [x] Define QueueRecord interface matching schema
+  - [x] Define QueueStatus type: "queued" | "started" | "elevenlabs" | "concatenator" | "done"
 
 ## Phase 3: Logging Setup
 

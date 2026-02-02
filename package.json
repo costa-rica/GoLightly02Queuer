@@ -18,7 +18,8 @@
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mantrify01db": "file:../Mantrify01Db"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
