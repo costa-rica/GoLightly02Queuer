@@ -85,23 +85,23 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 5: CSV and File Handler Modules
 
-- [ ] Create CSV parser module in `src/modules/csvParser.ts`
-  - [ ] Install csv-parse: `npm install csv-parse`
-  - [ ] Create function to read CSV file from filenameCsv
-  - [ ] Create function to parse mantraArray
-  - [ ] Return normalized data structure
-  - [ ] Handle validation and errors
-- [ ] Create CSV writer module in `src/modules/csvWriter.ts`
-  - [ ] Install csv-stringify: `npm install csv-stringify`
-  - [ ] Create function to write ElevenLabs CSV format
-  - [ ] Create function to write AudioConcatenator CSV format
-  - [ ] Generate unique filenames with timestamps
-  - [ ] Save to appropriate PATH_QUEUER subdirectories
-- [ ] Create file manager module in `src/modules/fileManager.ts`
-  - [ ] Create function to ensure directories exist
-  - [ ] Create function to generate unique job filenames
-  - [ ] Create function to validate file paths
-  - [ ] Create cleanup functions for temporary files
+- [x] Create CSV parser module in `src/modules/csvParser.ts`
+  - [x] Install csv-parse: `npm install csv-parse`
+  - [x] Create function to read CSV file from filenameCsv
+  - [x] Create function to parse mantraArray
+  - [x] Return normalized data structure
+  - [x] Handle validation and errors
+- [x] Create CSV writer module in `src/modules/csvWriter.ts`
+  - [x] Install csv-stringify: `npm install csv-stringify`
+  - [x] Create function to write ElevenLabs CSV format
+  - [x] Create function to write AudioConcatenator CSV format
+  - [x] Generate unique filenames with timestamps
+  - [x] Save to appropriate PATH_QUEUER subdirectories
+- [x] Create file manager module in `src/modules/fileManager.ts`
+  - [x] Create function to ensure directories exist
+  - [x] Create function to generate unique job filenames
+  - [x] Create function to validate file paths
+  - [x] Create cleanup functions for temporary files
 
 ## Phase 6: Queue Management Module
 
