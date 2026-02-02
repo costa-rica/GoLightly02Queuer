@@ -105,14 +105,14 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 6: Queue Management Module
 
-- [ ] Create queue manager in `src/modules/queueManager.ts`
-  - [ ] Create function to add new job to queue (status: "queued")
-  - [ ] Create function to update job status
-  - [ ] Create function to get next queued job
-  - [ ] Create function to check if queue is processing
-  - [ ] Implement FIFO queue processing logic
-  - [ ] Handle concurrent request scenarios
-  - [ ] Log all queue operations
+- [x] Create queue manager in `src/modules/queueManager.ts`
+  - [x] Create function to add new job to queue (status: "queued")
+  - [x] Create function to update job status
+  - [x] Create function to get next queued job
+  - [x] Create function to check if queue is processing
+  - [x] Implement FIFO queue processing logic
+  - [x] Handle concurrent request scenarios
+  - [x] Log all queue operations
 
 ## Phase 7: Child Process Management
 
