@@ -19,7 +19,8 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mantrify01db": "file:../Mantrify01Db"
+    "mantrify01db": "file:../Mantrify01Db",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

@@ -1,30 +1,26 @@
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
-import { sequelize } from './modules/database';
 
-// Load environment variables
+// Load environment variables first
 dotenv.config();
 
-// Validate required environment variables
-const requiredEnvVars = ['PORT', 'NAME_APP', 'PATH_TO_LOGS'];
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    console.error(`Error: Missing required environment variable: ${envVar}`);
-    process.exit(1);
-  }
-}
+// Import logger after dotenv (logger validates env vars)
+import logger from './modules/logger';
+import { sequelize } from './modules/database';
 
 // Test database connection and sync
 async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    console.log('Database connection has been established successfully.');
+    logger.info('Database connection has been established successfully');
 
     // Sync database to ensure all tables exist
     await sequelize.sync({ alter: false });
-    console.log('Database tables verified.');
+    logger.info('Database tables verified');
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    logger.error('Unable to connect to the database:', error);
+    // Implement async IIFE pattern for early exit
+    await new Promise((resolve) => setTimeout(resolve, 100));
     process.exit(1);
   }
 }
@@ -53,20 +49,26 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Start server
 async function startServer() {
-  // Initialize database first
-  await initializeDatabase();
+  try {
+    // Initialize database first
+    await initializeDatabase();
 
-  // Start Express server
-  app.listen(PORT, () => {
-    console.log(`${process.env.NAME_APP} running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-  });
+    // Start Express server
+    app.listen(PORT, () => {
+      logger.info(`${process.env.NAME_APP} running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    // Implement async IIFE pattern for early exit
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    process.exit(1);
+  }
 }
 
-// Initialize server
-startServer().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+// Initialize server using async IIFE pattern
+(async () => {
+  await startServer();
+})();
 
 export default app;
