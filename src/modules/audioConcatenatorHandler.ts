@@ -41,10 +41,11 @@ export function generateAudioConcatenatorCsv(
         pause_duration: element.pause_duration,
       });
     } else if (element.sound_file) {
-      // This is a pre-existing sound file
+      // This is a pre-existing sound file - construct full path
+      const soundFilePath = path.join(process.env.PATH_MP3_SOUND_FILES!, element.sound_file);
       rows.push({
         id: element.id,
-        audio_file_name_and_path: element.sound_file,
+        audio_file_name_and_path: soundFilePath,
         pause_duration: '', // No pause, just audio
       });
     } else {

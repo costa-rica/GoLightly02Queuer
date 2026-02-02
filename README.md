@@ -2,7 +2,7 @@
 
 TypeScript Express API that orchestrates mantra audio creation using SQLite/Sequelize database with queue management. Coordinates RequesterElevenLabs01 and AudioFileConcatenator01 microservices to generate custom meditation mantras. Processes requests in FIFO order and manages queue status throughout the workflow.
 
-**Tech Stack**: TypeScript, Express.js, SQLite, Sequelize, Winston
+Tech Stack: TypeScript, Express.js, SQLite, Sequelize, Winston
 
 ## Setup
 
@@ -18,6 +18,7 @@ TypeScript Express API that orchestrates mantra audio creation using SQLite/Sequ
 ## Usage
 
 Start the server:
+
 ```bash
 npm start        # Production mode (compiled)
 npm run dev      # Development mode (ts-node)
@@ -31,7 +32,8 @@ The API will be available at `http://localhost:3000`.
 
 Create a new mantra from CSV file or array.
 
-**Request Body**:
+Request Body:
+
 ```json
 {
   "userId": 1,
@@ -51,6 +53,7 @@ Create a new mantra from CSV file or array.
 ```
 
 OR with CSV file:
+
 ```json
 {
   "userId": 1,
@@ -58,7 +61,8 @@ OR with CSV file:
 }
 ```
 
-**Response**:
+Response:
+
 ```json
 {
   "success": true,
@@ -121,6 +125,7 @@ NODE_ENV=testing
 PATH_PROJECT_RESOURCES=/Users/nick/Documents/_project_resources/Mantrify/
 PATH_QUEUER=/Users/nick/Documents/_project_resources/Mantrify/queuer/
 JWT_SECRET=JWT_SECRET
+ADMIN_EMAIL=admin@mantrify.com
 
 # Database
 NAME_DB=mantrify01.db
@@ -141,6 +146,7 @@ API_KEY_ELEVEN_LABS=your_api_key_here
 NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR=AudioFileConcatenator01
 PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/Mantrify/audio_concatenator_input
 PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/audio_results
+PATH_MP3_SOUND_FILES=/Users/nick/Documents/_project_resources/Mantrify/mp3_sound_files
 
 # Child Process Paths
 PATH_TO_ELEVENLABS_SERVICE=/Users/nick/Documents/RequesterElevenLabs01
@@ -151,9 +157,10 @@ PATH_TO_AUDIO_FILE_CONCATENATOR=/Users/nick/Documents/AudioFileConcatenator01
 
 ### User Request CSV Files
 
-**Location**: `PATH_QUEUER/user_request_csv_files/`
+Location: `PATH_QUEUER/user_request_csv_files/`
 
-**Format**:
+Format:
+
 ```csv
 id,text,voice_id,speed,pause_duration,sound_file
 1,,,,3.0,
@@ -162,15 +169,27 @@ id,text,voice_id,speed,pause_duration,sound_file
 4,,,,2.5,
 ```
 
-**Columns**:
+Columns:
+
 - `id` (required) - Unique identifier for each row
 - `text` - Text to convert to speech (processed by ElevenLabs)
 - `voice_id` - ElevenLabs voice ID (optional, uses default if empty)
 - `speed` - Speech speed 0.7-1.2 (optional, uses default if empty)
 - `pause_duration` - Seconds of silence to insert
-- `sound_file` - Path to existing audio file to include
+- `sound_file` - Filename of existing audio file (must exist in PATH_MP3_SOUND_FILES)
 
-**Note**: Each row must have either `text`, `pause_duration`, or `sound_file` populated.
+Rules:
+
+- Each row must have either `text`, `pause_duration`, or `sound_file` populated
+- `sound_file` cannot be used with `text`, `voice_id`, `speed`, or `pause_duration` in the same row
+
+### Sound Files
+
+Location: `PATH_MP3_SOUND_FILES/`
+
+This directory contains pre-existing MP3 audio files that can be referenced in the `sound_file` field of mantra requests. When a `sound_file` value is provided, the system constructs the full path by joining `PATH_MP3_SOUND_FILES` with the filename and includes it in the audio concatenation workflow.
+
+Example: If `sound_file` is set to `bell.mp3`, the system will look for the file at `PATH_MP3_SOUND_FILES/bell.mp3`.
 
 ## Child Processes
 
@@ -178,26 +197,28 @@ id,text,voice_id,speed,pause_duration,sound_file
 
 Converts text to speech using ElevenLabs API.
 
-**Location**: `PATH_TO_ELEVENLABS_SERVICE`
+Location: `PATH_TO_ELEVENLABS_SERVICE`
 
-**Environment Variables**:
+Environment Variables:
+
 - `NAME_APP` - Set to `NAME_CHILD_PROCESS_ELEVENLABS`
 - Inherits all parent environment variables
 
-**Logging**: Logs to `PATH_TO_LOGS/RequesterElevenLabs01.log`
+Logging: Logs to `PATH_TO_LOGS/RequesterElevenLabs01.log`
 
 ### AudioFileConcatenator01
 
 Concatenates audio files and generates silence.
 
-**Location**: `PATH_TO_AUDIO_FILE_CONCATENATOR`
+Location: `PATH_TO_AUDIO_FILE_CONCATENATOR`
 
-**Environment Variables**:
+Environment Variables:
+
 - `NAME_APP` - Set to `NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR`
 - `PATH_AND_FILENAME_AUDIO_CSV_FILE` - Path to input CSV
 - Inherits all parent environment variables
 
-**Logging**: Logs to `PATH_TO_LOGS/AudioFileConcatenator01.log`
+Logging: Logs to `PATH_TO_LOGS/AudioFileConcatenator01.log`
 
 ## Workflow
 

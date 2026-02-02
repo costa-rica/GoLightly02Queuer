@@ -100,6 +100,21 @@ function validateMantraArray(mantraArray: any[]): void {
       });
     }
 
+    // Validate mutual exclusivity: sound_file cannot coexist with text/voice_id/speed/pause_duration
+    if (hasSound) {
+      const hasTextFields = hasText ||
+                           (element.voice_id && element.voice_id.toString().trim() !== '') ||
+                           (element.speed && element.speed.toString().trim() !== '') ||
+                           hasPause;
+
+      if (hasTextFields) {
+        errors.push({
+          index,
+          message: 'sound_file cannot be used with text, voice_id, speed, or pause_duration in the same element',
+        });
+      }
+    }
+
     // Validate voice_id if present
     if (element.voice_id && typeof element.voice_id !== 'string') {
       errors.push({ index, message: 'voice_id must be a string' });

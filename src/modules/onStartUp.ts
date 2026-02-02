@@ -66,12 +66,46 @@ export async function createAdminUser(): Promise<any> {
 }
 
 /**
+ * Validate required environment variables
+ */
+function validateEnvironmentVariables(): void {
+  logger.info('Validating required environment variables...');
+
+  const requiredEnvVars = [
+    'PATH_MP3_SOUND_FILES',
+    'PATH_USER_ELEVENLABS_CSV_FILES',
+    'PATH_AUDIO_CSV_FILE',
+    'PATH_TO_ELEVENLABS_SERVICE',
+    'PATH_TO_AUDIO_FILE_CONCATENATOR',
+  ];
+
+  const missingVars: string[] = [];
+
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      missingVars.push(envVar);
+    }
+  }
+
+  if (missingVars.length > 0) {
+    const errorMsg = `Missing required environment variables: ${missingVars.join(', ')}`;
+    logger.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+
+  logger.info('All required environment variables are set');
+}
+
+/**
  * Initialize application on startup
  * Checks database and creates admin user if needed
  */
 export async function initializeApp(): Promise<void> {
   try {
     logger.info('Starting application initialization...');
+
+    // Validate required environment variables
+    validateEnvironmentVariables();
 
     // Check if database has users
     const hasUsers = await checkDatabase();
