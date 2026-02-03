@@ -6,7 +6,7 @@ import { generateJobFilename } from './fileManager';
 import { runElevenLabsWorkflow } from './elevenLabsHandler';
 import { runAudioConcatenatorWorkflow } from './audioConcatenatorHandler';
 import { saveMantraToDatabase } from './mantraManager';
-import { saveElevenLabsFilesToDatabase } from './elevenLabsFilesManager';
+import { saveElevenLabsFilesToDatabase, linkMantraToElevenLabsFiles } from './elevenLabsFilesManager';
 
 /**
  * Main workflow orchestrator for mantra creation
@@ -19,6 +19,7 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
   logger.info(`Starting mantra creation workflow for user ${userId}`);
 
   let queueId: number | undefined;
+  let elevenLabsFileIds: number[] = [];
 
   try {
     // Step 1: Parse input (filenameCsv or mantraArray)
@@ -60,8 +61,8 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     // Save ElevenLabsFiles records to database
     if (elevenLabsFiles.length > 0) {
       logger.info('Saving ElevenLabsFiles records to database');
-      await saveElevenLabsFilesToDatabase(elevenLabsFiles, mantraElements);
-      logger.info('ElevenLabsFiles records saved successfully');
+      elevenLabsFileIds = await saveElevenLabsFilesToDatabase(elevenLabsFiles, mantraElements);
+      logger.info(`ElevenLabsFiles records saved successfully with IDs: ${elevenLabsFileIds.join(', ')}`);
     }
 
     // Step 8-11: Run AudioConcatenator workflow
@@ -76,6 +77,13 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     logger.info('Saving mantra to database');
     const mantra = await saveMantraToDatabase(finalFilePath, userId);
     logger.info(`Mantra saved to database with ID: ${mantra.id}`);
+
+    // Link Mantra to ElevenLabsFiles records
+    if (elevenLabsFileIds.length > 0) {
+      logger.info('Linking Mantra to ElevenLabsFiles records');
+      await linkMantraToElevenLabsFiles(mantra.id, elevenLabsFileIds);
+      logger.info('Mantra successfully linked to ElevenLabsFiles records');
+    }
 
     // Step 12: Update status to "done"
     logger.info('Step 12: Updating status to done');

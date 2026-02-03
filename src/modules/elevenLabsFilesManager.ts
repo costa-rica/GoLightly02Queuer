@@ -1,6 +1,6 @@
 import * as path from 'path';
 import logger from './logger';
-import { ElevenLabsFiles } from './database';
+import { ElevenLabsFiles, ContractMantrasElevenLabsFiles } from './database';
 import { MantraArrayElement } from '../types';
 
 /**
@@ -66,6 +66,41 @@ export async function saveElevenLabsFilesToDatabase(
   }
 
   logger.info(`Successfully saved ${createdIds.length} ElevenLabsFiles records`);
+
+  return createdIds;
+}
+
+/**
+ * Link Mantra to ElevenLabsFiles records via ContractMantrasElevenLabsFiles
+ * @param mantraId - ID of the Mantra record
+ * @param elevenLabsFileIds - Array of ElevenLabsFiles IDs to link
+ * @returns Array of created ContractMantrasElevenLabsFiles record IDs
+ */
+export async function linkMantraToElevenLabsFiles(
+  mantraId: number,
+  elevenLabsFileIds: number[]
+): Promise<number[]> {
+  logger.info(`Linking Mantra ${mantraId} to ${elevenLabsFileIds.length} ElevenLabsFiles records`);
+
+  const createdIds: number[] = [];
+
+  // Create a contract record for each ElevenLabsFiles ID
+  for (const elevenLabsFilesId of elevenLabsFileIds) {
+    try {
+      const contract = await ContractMantrasElevenLabsFiles.create({
+        mantraId,
+        elevenLabsFilesId,
+      });
+
+      createdIds.push(contract.id);
+      logger.info(`Created ContractMantrasElevenLabsFiles record ${contract.id}: mantraId=${mantraId}, elevenLabsFilesId=${elevenLabsFilesId}`);
+    } catch (error) {
+      logger.error(`Failed to create ContractMantrasElevenLabsFiles for mantraId=${mantraId}, elevenLabsFilesId=${elevenLabsFilesId}:`, error);
+      throw error;
+    }
+  }
+
+  logger.info(`Successfully linked Mantra ${mantraId} to ${createdIds.length} ElevenLabsFiles records`);
 
   return createdIds;
 }
