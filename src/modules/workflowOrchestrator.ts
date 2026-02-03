@@ -5,6 +5,7 @@ import { addJobToQueue, updateJobStatus } from './queueManager';
 import { generateJobFilename } from './fileManager';
 import { runElevenLabsWorkflow } from './elevenLabsHandler';
 import { runAudioConcatenatorWorkflow } from './audioConcatenatorHandler';
+import { saveMantraToDatabase } from './mantraManager';
 
 /**
  * Main workflow orchestrator for mantra creation
@@ -62,6 +63,11 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     const finalFilePath = await runAudioConcatenatorWorkflow(mantraElements, elevenLabsFiles);
 
     logger.info(`AudioConcatenator workflow completed: ${finalFilePath}`);
+
+    // Save Mantra to database and link to user
+    logger.info('Saving mantra to database');
+    const mantra = await saveMantraToDatabase(finalFilePath, userId);
+    logger.info(`Mantra saved to database with ID: ${mantra.id}`);
 
     // Step 12: Update status to "done"
     logger.info('Step 12: Updating status to done');
