@@ -6,6 +6,7 @@ import { generateJobFilename } from './fileManager';
 import { runElevenLabsWorkflow } from './elevenLabsHandler';
 import { runAudioConcatenatorWorkflow } from './audioConcatenatorHandler';
 import { saveMantraToDatabase } from './mantraManager';
+import { saveElevenLabsFilesToDatabase } from './elevenLabsFilesManager';
 
 /**
  * Main workflow orchestrator for mantra creation
@@ -55,6 +56,13 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     const elevenLabsFiles = await runElevenLabsWorkflow(mantraElements);
 
     logger.info(`ElevenLabs workflow completed with ${elevenLabsFiles.length} files`);
+
+    // Save ElevenLabsFiles records to database
+    if (elevenLabsFiles.length > 0) {
+      logger.info('Saving ElevenLabsFiles records to database');
+      await saveElevenLabsFilesToDatabase(elevenLabsFiles, mantraElements);
+      logger.info('ElevenLabsFiles records saved successfully');
+    }
 
     // Step 8-11: Run AudioConcatenator workflow
     logger.info('Step 8-11: Running AudioConcatenator workflow');
