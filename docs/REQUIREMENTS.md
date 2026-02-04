@@ -91,7 +91,7 @@ The CSV file will have the following columns:
 - pause_duration
 - sound_file
 
-In the csv each row there could be three different types of filled rows. The text, voice_id and speed go together but voice_id and speed are optional becuase the REquesterElevenLabs01 service has defaults that it will use. But if there is text, there will be no pause_duration or sound_file. If there is pause_duration, there will be no text (voice_id or speed) and no sound_file. If there is sound_file there will be no text / pause_duration.
+In the csv each row there could be three different types of filled rows. The text, voice_id and speed go together but voice_id and speed are optional becuase the RequesterElevenLabs01 service has defaults that it will use. But if there is text, there will be no pause_duration or sound_file. If there is pause_duration, there will be no text (voice_id or speed) and no sound_file. If there is sound_file there will be no text / pause_duration.
 
 Here is an example of the csv file:
 
