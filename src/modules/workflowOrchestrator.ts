@@ -7,6 +7,7 @@ import { runElevenLabsWorkflow } from './elevenLabsHandler';
 import { runAudioConcatenatorWorkflow } from './audioConcatenatorHandler';
 import { saveMantraToDatabase } from './mantraManager';
 import { saveElevenLabsFilesToDatabase, linkMantraToElevenLabsFiles } from './elevenLabsFilesManager';
+import { findSoundFilesInMantra, linkMantraToSoundFiles } from './soundFilesManager';
 
 /**
  * Main workflow orchestrator for mantra creation
@@ -20,6 +21,7 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
 
   let queueId: number | undefined;
   let elevenLabsFileIds: number[] = [];
+  let soundFileIds: number[] = [];
 
   try {
     // Step 1: Parse input (filenameCsv or mantraArray)
@@ -37,6 +39,13 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     }
 
     logger.info(`Parsed ${mantraElements.length} mantra elements`);
+
+    // Find any sound files referenced in the mantra elements
+    logger.info('Finding sound files referenced in mantra elements');
+    soundFileIds = await findSoundFilesInMantra(mantraElements);
+    if (soundFileIds.length > 0) {
+      logger.info(`Found ${soundFileIds.length} sound file references`);
+    }
 
     // Step 2: Create and save queue record (status: "queued")
     logger.info('Step 2: Creating queue record');
@@ -83,6 +92,13 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
       logger.info('Linking Mantra to ElevenLabsFiles records');
       await linkMantraToElevenLabsFiles(mantra.id, elevenLabsFileIds);
       logger.info('Mantra successfully linked to ElevenLabsFiles records');
+    }
+
+    // Link Mantra to SoundFiles records
+    if (soundFileIds.length > 0) {
+      logger.info('Linking Mantra to SoundFiles records');
+      await linkMantraToSoundFiles(mantra.id, soundFileIds);
+      logger.info('Mantra successfully linked to SoundFiles records');
     }
 
     // Step 12: Update status to "done"
