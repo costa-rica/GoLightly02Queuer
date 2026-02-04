@@ -20,6 +20,7 @@ import {
   SoundFiles,
   ElevenLabsFiles,
   ContractMantrasElevenLabsFiles,
+  ContractMantrasSoundFiles,
 } from "mantrify01db";
 ```
 
@@ -142,8 +143,14 @@ const mantraFileContract = await ContractMantrasElevenLabsFiles.create({
   elevenLabsFilesId: elevenLabsFile.id,
 });
 
+// Associate a mantra with a sound file
+const mantraSoundContract = await ContractMantrasSoundFiles.create({
+  mantraId: mantra.id,
+  soundFilesId: soundFile.id,
+});
+
 // Track a listen event
-const listen = await UserMantraListen.create({
+const listen = await ContractUserMantraListen.create({
   userId: user.id,
   mantraId: mantra.id,
   listenCount: 1,
@@ -164,6 +171,16 @@ const userWithMantras = await User.findByPk(userId, {
 // Find mantra with associated ElevenLabs files
 const mantraWithFiles = await Mantra.findByPk(mantraId, {
   include: [{ association: "elevenLabsFiles" }],
+});
+
+// Find mantra with associated sound files
+const mantraWithSounds = await Mantra.findByPk(mantraId, {
+  include: [{ association: "soundFiles" }],
+});
+
+// Find sound file with associated mantras
+const soundFileWithMantras = await SoundFiles.findByPk(soundFileId, {
+  include: [{ association: "mantras" }],
 });
 ```
 
@@ -265,7 +282,7 @@ try {
 | mantraId          | mantraId          | NO   | FK → mantras.id          |
 | elevenLabsFilesId | elevenLabsFilesId | NO   | FK → elevenlabs_files.id |
 
-### Table: `UserMantraListens`
+### Table: `ContractUserMantraListens`
 
 #### Columns
 
@@ -297,3 +314,13 @@ try {
 | name        | string | NO   |                            |
 | description | string | YES  |                            |
 | filename    | string | NO   | filename of the sound file |
+
+### Table: `ContractMantrasSoundFiles`
+
+#### Columns
+
+| Column       | Type         | Null | Notes               |
+| ------------ | ------------ | ---- | ------------------- |
+| id           | id           | NO   | PK                  |
+| mantraId     | mantraId     | NO   | FK → mantras.id     |
+| soundFilesId | soundFilesId | NO   | FK → sound_files.id |
