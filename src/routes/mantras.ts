@@ -14,6 +14,11 @@ router.post('/new', async (req: Request, res: Response, next: NextFunction) => {
   try {
     logger.info('Received POST /mantras/new request');
 
+    // Log complete request body in development mode
+    if (process.env.NODE_ENV === 'development') {
+      logger.debug(`Request body: ${JSON.stringify(req.body, null, 2)}`);
+    }
+
     // Validate request body
     validateMantraRequest(req.body);
 
