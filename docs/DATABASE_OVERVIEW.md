@@ -178,6 +178,11 @@ const mantraWithSounds = await Mantra.findByPk(mantraId, {
   include: [{ association: "soundFiles" }],
 });
 
+// Find mantra with user listen records
+const mantraWithListens = await Mantra.findByPk(mantraId, {
+  include: [{ association: "contractUserMantraListenCount" }],
+});
+
 // Find sound file with associated mantras
 const soundFileWithMantras = await SoundFiles.findByPk(soundFileId, {
   include: [{ association: "mantras" }],
@@ -238,6 +243,13 @@ try {
 | emailVerifiedAt | emailVerifiedAt | YES  | set upon verification          |
 | isAdmin         | isAdmin         | NO   | default `false`                |
 
+#### Relationships
+
+- belongsToMany Mantra through ContractUsersMantras (as "mantras")
+- hasMany ContractUsersMantras (as "userMantras")
+- hasMany ContractUserMantraListen (as "mantraListens")
+- hasMany Queue (as "queueItems")
+
 ### Table: `Mantras`
 
 #### Columns
@@ -250,7 +262,15 @@ try {
 | visibility  | visibility  | NO   | default `'private'`                                                |
 | filename    | filename    | YES  | filename of the audio file                                         |
 | filePath    | filePath    | YES  | path to the audio file                                             |
-| listens     | integer     | NO   | default `0`, tracks non-registered user listens for public mantras |
+| listenCount | integer     | NO   | default `0`, tracks non-registered user listens for public mantras |
+
+#### Relationships
+
+- belongsToMany User through ContractUsersMantras (as "users")
+- hasMany ContractUsersMantras (as "contractUsersMantras")
+- hasMany ContractUserMantraListen (as "contractUserMantraListenCount")
+- belongsToMany ElevenLabsFiles through ContractMantrasElevenLabsFiles (as "elevenLabsFiles")
+- belongsToMany SoundFiles through ContractMantrasSoundFiles (as "soundFiles")
 
 ### Table: `ContractUsersMantras`
 
@@ -261,6 +281,11 @@ try {
 | id       | id       | NO   | PK              |
 | userId   | userId   | NO   | FK → users.id   |
 | mantraId | mantraId | NO   | FK → mantras.id |
+
+#### Relationships
+
+- belongsTo User (as "user")
+- belongsTo Mantra (as "mantra")
 
 ### Table: `ElevenLabsFiles`
 
@@ -273,6 +298,10 @@ try {
 | filePath | filePath | YES  | path to the audio file     |
 | text     | string   | YES  | text content               |
 
+#### Relationships
+
+- belongsToMany Mantra through ContractMantrasElevenLabsFiles (as "mantras")
+
 ### Table: `ContractMantrasElevenLabsFiles`
 
 #### Columns
@@ -282,6 +311,11 @@ try {
 | id                | id                | NO   | PK                       |
 | mantraId          | mantraId          | NO   | FK → mantras.id          |
 | elevenLabsFilesId | elevenLabsFilesId | NO   | FK → elevenlabs_files.id |
+
+#### Relationships
+
+- belongsTo Mantra (as "mantra")
+- belongsTo ElevenLabsFiles (as "elevenLabsFile")
 
 ### Table: `ContractUserMantraListens`
 
@@ -295,6 +329,11 @@ try {
 | listenCount | listenCount | NO   | set upon listen                 |
 | favorite    | boolean     | NO   | default `false`, user favorited |
 
+#### Relationships
+
+- belongsTo User (as "user")
+- belongsTo Mantra (as "mantra")
+
 ### Table: `Queue`
 
 #### Columns
@@ -305,6 +344,10 @@ try {
 | userId      | userId | NO   | FK → users.id                                                             |
 | status      | string | NO   | "queued", "started", "elevenlabs", "concatenator" or "done"               |
 | jobFilename | string | NO   | csv filename of the job file stored in PATH_QUEUER/user_request_csv_files |
+
+#### Relationships
+
+- belongsTo User (as "user")
 
 ### Table: `SoundFiles`
 
@@ -317,6 +360,10 @@ try {
 | description | string | YES  |                            |
 | filename    | string | NO   | filename of the sound file |
 
+#### Relationships
+
+- belongsToMany Mantra through ContractMantrasSoundFiles (as "mantras")
+
 ### Table: `ContractMantrasSoundFiles`
 
 #### Columns
@@ -326,3 +373,8 @@ try {
 | id           | id           | NO   | PK                  |
 | mantraId     | mantraId     | NO   | FK → mantras.id     |
 | soundFilesId | soundFilesId | NO   | FK → sound_files.id |
+
+#### Relationships
+
+- belongsTo Mantra (as "mantra")
+- belongsTo SoundFiles (as "soundFile")
