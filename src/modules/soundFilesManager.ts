@@ -50,7 +50,14 @@ export async function findSoundFilesInMantra(
 
   logger.info(`Successfully found ${soundFileIds.length} SoundFiles records`);
 
-  return soundFileIds;
+  // Deduplicate sound file IDs (same sound file may be used multiple times in one mantra)
+  const uniqueSoundFileIds = Array.from(new Set(soundFileIds));
+
+  if (uniqueSoundFileIds.length < soundFileIds.length) {
+    logger.info(`Deduplicated ${soundFileIds.length} references to ${uniqueSoundFileIds.length} unique SoundFiles`);
+  }
+
+  return uniqueSoundFileIds;
 }
 
 /**
