@@ -3,6 +3,7 @@ import { MantraRequestBody, MantraArrayElement, WorkflowResult } from '../types'
 import { parseCsvFile, parseMantraArray } from './csvParser';
 import { addJobToQueue, updateJobStatus } from './queueManager';
 import { generateJobFilename } from './fileManager';
+import { writeJobCsv } from './csvWriter';
 import { runElevenLabsWorkflow } from './elevenLabsHandler';
 import { runAudioConcatenatorWorkflow } from './audioConcatenatorHandler';
 import { saveMantraToDatabase } from './mantraManager';
@@ -50,6 +51,11 @@ export async function orchestrateMantraCreation(requestBody: MantraRequestBody):
     // Step 2: Create and save queue record (status: "queued")
     logger.info('Step 2: Creating queue record');
     const jobFilename = generateJobFilename(userId);
+
+    // Write job CSV file to PATH_QUEUER/YYYYMMDD/ subdirectory
+    logger.info('Writing job CSV file to disk');
+    writeJobCsv(jobFilename, mantraElements);
+
     const queueRecord = await addJobToQueue(userId, jobFilename);
     queueId = queueRecord.id!;
 

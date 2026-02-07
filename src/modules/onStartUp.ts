@@ -77,6 +77,7 @@ function validateEnvironmentVariables(): void {
     'PATH_AUDIO_CSV_FILE',
     'PATH_TO_ELEVENLABS_SERVICE',
     'PATH_TO_AUDIO_FILE_CONCATENATOR',
+    'PATH_QUEUER',
   ];
 
   const missingVars: string[] = [];
