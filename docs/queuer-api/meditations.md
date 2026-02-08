@@ -13,6 +13,8 @@ Request body (JSON):
 - userId (required): Positive integer identifying the user creating the meditation
 - filenameCsv (optional): String filename of CSV file in PATH_QUEUER/user_request_csv_files directory
 - meditationArray (optional): Array of meditation element objects (see structure below)
+- title (optional): String title for the meditation (overrides auto-generated title from filename)
+- description (optional): String description for the meditation
 
 Note: Either filenameCsv or meditationArray must be provided, but not both.
 
@@ -35,6 +37,8 @@ curl --location 'http://localhost:3000/meditations/new' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "userId": 1,
+  "title": "Morning Relaxation",
+  "description": "A calming meditation to start your day",
   "meditationArray": [
     {
       "id": 1,
@@ -65,7 +69,9 @@ curl --location 'http://localhost:3000/meditations/new' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "userId": 1,
-  "filenameCsv": "meditation_20260203.csv"
+  "filenameCsv": "meditation_20260203.csv",
+  "title": "Evening Wind Down",
+  "description": "A peaceful meditation for bedtime"
 }'
 ```
 
@@ -200,7 +206,7 @@ The endpoint triggers a multi-stage asynchronous workflow:
 4. ElevenLabs text-to-speech generation (status: "elevenlabs")
 5. ElevenLabsFiles database records creation
 6. AudioConcatenator file merging (status: "concatenator")
-7. Meditation database record creation
+7. Meditation database record creation (saves title and description if provided; otherwise auto-generates title from filename)
 8. ContractUsersMeditations and ContractMeditationsElevenLabsFiles linking
 9. Queue status update to "done"
 

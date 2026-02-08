@@ -21,6 +21,8 @@ export interface MeditationRequestBody {
   userId: number;
   filenameCsv?: string;
   meditationArray?: MeditationArrayElement[];
+  title?: string;
+  description?: string;
 }
 
 // Meditation array element (from request body)

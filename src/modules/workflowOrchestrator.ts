@@ -28,7 +28,7 @@ import {
 export async function orchestrateMeditationCreation(
   requestBody: MeditationRequestBody,
 ): Promise<WorkflowResult> {
-  const { userId, filenameCsv, meditationArray } = requestBody;
+  const { userId, filenameCsv, meditationArray, title, description } = requestBody;
 
   logger.info(`Starting meditation creation workflow for user ${userId}`);
 
@@ -114,7 +114,7 @@ export async function orchestrateMeditationCreation(
 
     // Save Meditation to database and link to user
     logger.info("Saving meditation to database");
-    const meditation = await saveMeditationToDatabase(finalFilePath, userId);
+    const meditation = await saveMeditationToDatabase(finalFilePath, userId, title, description);
     logger.info(`Meditation saved to database with ID: ${meditation.id}`);
 
     // Link Meditation to ElevenLabsFiles records
