@@ -1,4 +1,4 @@
-# Mantrify01Queuer API Reference
+# GoLightly01Queuer API Reference
 
 This document provides guidance for how to document the API.
 
@@ -6,9 +6,9 @@ This file serves as the top-level API index.
 
 Each resource has its own documentation under the [`/queuer-api`](./queuer-api) folder:
 
-- [mantras](./queuer-api/mantras.md)
+- [meditations](./queuer-api/meditations.md)
 
-File names should be in lower case and follow the pattern of their router subdomain. This means routers that have two words will have a hyphen between them. If we make a router for the subdomain "contract-users-mantra" the file will be named docs/api/contract-users-mantra.md.
+File names should be in lower case and follow the pattern of their router subdomain. This means routers that have two words will have a hyphen between them. If we make a router for the subdomain "contract-users-meditation" the file will be named docs/api/contract-users-meditation.md.
 
 ## Endpoint documentation format
 

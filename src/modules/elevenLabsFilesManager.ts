@@ -1,18 +1,24 @@
-import * as path from 'path';
-import logger from './logger';
-import { ElevenLabsFiles, ContractMantrasElevenLabsFiles } from './database';
-import { MantraArrayElement } from '../types';
+import * as path from "path";
+import logger from "./logger";
+import {
+  ElevenLabsFiles,
+  ContractMeditationsElevenLabsFiles,
+} from "./database";
+import { MeditationArrayElement } from "../types";
 
 /**
  * Parse file path into filename and directory path
  * @param fullPath - Complete file path from ElevenLabs output
  * @returns Object with filename and filePath
  */
-export function parseFilePath(fullPath: string): { filename: string; filePath: string } {
+export function parseFilePath(fullPath: string): {
+  filename: string;
+  filePath: string;
+} {
   const filename = path.basename(fullPath);
   const directory = path.dirname(fullPath);
   // Add trailing slash to directory path for consistency
-  const filePath = directory.endsWith('/') ? directory : `${directory}/`;
+  const filePath = directory.endsWith("/") ? directory : `${directory}/`;
 
   return { filename, filePath };
 }
@@ -20,22 +26,26 @@ export function parseFilePath(fullPath: string): { filename: string; filePath: s
 /**
  * Save ElevenLabsFiles records to database
  * @param generatedFilePaths - Array of full file paths from ElevenLabs output
- * @param mantraElements - Original mantra elements with text
+ * @param meditationElements - Original meditation elements with text
  * @returns Array of created ElevenLabsFiles record IDs
  */
 export async function saveElevenLabsFilesToDatabase(
   generatedFilePaths: string[],
-  mantraElements: MantraArrayElement[]
+  meditationElements: MeditationArrayElement[],
 ): Promise<number[]> {
-  logger.info(`Saving ${generatedFilePaths.length} ElevenLabsFiles records to database`);
+  logger.info(
+    `Saving ${generatedFilePaths.length} ElevenLabsFiles records to database`,
+  );
 
-  // Filter mantra elements to only those with text (in order)
-  const textElements = mantraElements.filter((element) => element.text && element.text.trim() !== '');
+  // Filter meditation elements to only those with text (in order)
+  const textElements = meditationElements.filter(
+    (element) => element.text && element.text.trim() !== "",
+  );
 
   // Validate that we have matching counts
   if (generatedFilePaths.length !== textElements.length) {
     logger.warn(
-      `Mismatch between generated files (${generatedFilePaths.length}) and text elements (${textElements.length})`
+      `Mismatch between generated files (${generatedFilePaths.length}) and text elements (${textElements.length})`,
     );
   }
 
@@ -54,53 +64,67 @@ export async function saveElevenLabsFilesToDatabase(
       const record = await ElevenLabsFiles.create({
         filename,
         filePath,
-        text: textElement?.text || '', // Use the original text from the mantra element
+        text: textElement?.text || "", // Use the original text from the meditation element
       });
 
       createdIds.push(record.id);
       logger.info(`Created ElevenLabsFiles record ${record.id}: ${filename}`);
     } catch (error) {
-      logger.error(`Failed to create ElevenLabsFiles record for ${filename}:`, error);
+      logger.error(
+        `Failed to create ElevenLabsFiles record for ${filename}:`,
+        error,
+      );
       throw error;
     }
   }
 
-  logger.info(`Successfully saved ${createdIds.length} ElevenLabsFiles records`);
+  logger.info(
+    `Successfully saved ${createdIds.length} ElevenLabsFiles records`,
+  );
 
   return createdIds;
 }
 
 /**
- * Link Mantra to ElevenLabsFiles records via ContractMantrasElevenLabsFiles
- * @param mantraId - ID of the Mantra record
+ * Link Meditation to ElevenLabsFiles records via ContractMeditationsElevenLabsFiles
+ * @param meditationId - ID of the Meditation record
  * @param elevenLabsFileIds - Array of ElevenLabsFiles IDs to link
- * @returns Array of created ContractMantrasElevenLabsFiles record IDs
+ * @returns Array of created ContractMeditationsElevenLabsFiles record IDs
  */
-export async function linkMantraToElevenLabsFiles(
-  mantraId: number,
-  elevenLabsFileIds: number[]
+export async function linkMeditationToElevenLabsFiles(
+  meditationId: number,
+  elevenLabsFileIds: number[],
 ): Promise<number[]> {
-  logger.info(`Linking Mantra ${mantraId} to ${elevenLabsFileIds.length} ElevenLabsFiles records`);
+  logger.info(
+    `Linking Meditation ${meditationId} to ${elevenLabsFileIds.length} ElevenLabsFiles records`,
+  );
 
   const createdIds: number[] = [];
 
   // Create a contract record for each ElevenLabsFiles ID
   for (const elevenLabsFilesId of elevenLabsFileIds) {
     try {
-      const contract = await ContractMantrasElevenLabsFiles.create({
-        mantraId,
+      const contract = await ContractMeditationsElevenLabsFiles.create({
+        meditationId,
         elevenLabsFilesId,
       });
 
       createdIds.push(contract.id);
-      logger.info(`Created ContractMantrasElevenLabsFiles record ${contract.id}: mantraId=${mantraId}, elevenLabsFilesId=${elevenLabsFilesId}`);
+      logger.info(
+        `Created ContractMeditationsElevenLabsFiles record ${contract.id}: meditationId=${meditationId}, elevenLabsFilesId=${elevenLabsFilesId}`,
+      );
     } catch (error) {
-      logger.error(`Failed to create ContractMantrasElevenLabsFiles for mantraId=${mantraId}, elevenLabsFilesId=${elevenLabsFilesId}:`, error);
+      logger.error(
+        `Failed to create ContractMeditationsElevenLabsFiles for meditationId=${meditationId}, elevenLabsFilesId=${elevenLabsFilesId}:`,
+        error,
+      );
       throw error;
     }
   }
 
-  logger.info(`Successfully linked Mantra ${mantraId} to ${createdIds.length} ElevenLabsFiles records`);
+  logger.info(
+    `Successfully linked Meditation ${meditationId} to ${createdIds.length} ElevenLabsFiles records`,
+  );
 
   return createdIds;
 }

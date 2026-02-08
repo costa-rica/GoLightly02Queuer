@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Mantrify01Queuer is a TypeScript Express API that orchestrates mantra audio creation using SQLite/Sequelize database with FIFO queue management. It coordinates two microservices (RequesterElevenLabs01 and AudioFileConcatenator01) to generate custom meditation mantras from user input.
+GoLightly01Queuer is a TypeScript Express API that orchestrates meditation audio creation using SQLite/Sequelize database with FIFO queue management. It coordinates two microservices (RequesterElevenLabs01 and AudioFileConcatenator01) to generate custom meditation meditations from user input.
 
 ## Essential Commands
 
@@ -26,26 +26,26 @@ npm test
 
 ### Workflow Pipeline
 
-The system follows a multi-stage pipeline triggered by `POST /mantras/new`:
+The system follows a multi-stage pipeline triggered by `POST /meditations/new`:
 
-1. **Input Parsing** (csvParser.ts) - Accepts either `filenameCsv` or `mantraArray` in request body
+1. **Input Parsing** (csvParser.ts) - Accepts either `filenameCsv` or `meditationArray` in request body
 2. **Queue Creation** (queueManager.ts) - Creates queue record with status "queued"
 3. **Status: started** - Updates queue status
 4. **ElevenLabs Stage** (elevenLabsHandler.ts) - Generates CSV for text-to-speech entries, spawns RequesterElevenLabs01 child process, parses output to extract MP3 file paths
 5. **Status: elevenlabs** - Updates queue status
 6. **AudioConcatenator Stage** (audioConcatenatorHandler.ts) - Generates CSV mapping all elements (ElevenLabs files, pauses, sound files), spawns AudioFileConcatenator01 child process, parses output for final MP3 path
 7. **Status: concatenator** - Updates queue status
-8. **Database Update** (mantraManager.ts) - Creates Mantra record with parsed file path/name, creates ContractUsersMantras linking userId to mantraId
+8. **Database Update** (meditationsManager.ts) - Creates Meditation record with parsed file path/name, creates ContractUsersMeditations linking userId to meditationId
 9. **Status: done** - Marks queue complete and returns final file path
 
 All orchestration happens in `workflowOrchestrator.ts`.
 
 ### Database Integration
 
-Uses custom package `mantrify01db` (local dependency at `/Users/nick/Documents/Mantrify01Db`):
+Uses custom package `golightly02db` (local dependency at `/Users/nick/Documents/GoLightly02Db`):
 
-- **Models**: User, Queue, Mantra, ContractUsersMantras, ElevenLabsFiles, UserMantraListen, SoundFiles
-- **Key tables for this service**: Queue (FIFO management), Mantra (output files), ContractUsersMantras (user-mantra links)
+- **Models**: User, Queue, Meditation, ContractUsersMeditations, ElevenLabsFiles, UserMeditationListen, SoundFiles
+- **Key tables for this service**: Queue (FIFO management), Meditation (output files), ContractUsersMeditations (user-meditation links)
 - Import models from `src/modules/database.ts`
 
 ### Child Process Management
@@ -53,12 +53,14 @@ Uses custom package `mantrify01db` (local dependency at `/Users/nick/Documents/M
 The system spawns two Node.js microservices as child processes:
 
 **RequesterElevenLabs01** (elevenLabsHandler.ts):
+
 - Spawned with: `npm start` in PATH_TO_ELEVENLABS_SERVICE directory
 - Input: CSV with id, text, voice_id, speed
 - Output: Parses stdout for lines matching `Audio file created successfully: <path>`
 - Environment: Inherits parent env + NAME_APP set to NAME_CHILD_PROCESS_ELEVENLABS
 
 **AudioFileConcatenator01** (audioConcatenatorHandler.ts):
+
 - Spawned with: `npm start` in PATH_TO_AUDIO_FILE_CONCATENATOR directory
 - Input: CSV with id, audio_file_name_and_path, pause_duration
 - Output: Parses stdout for lines matching `Output|Saved to|Created: <path>.mp3`
@@ -66,9 +68,10 @@ The system spawns two Node.js microservices as child processes:
 
 Generic spawner in `childProcessSpawner.ts` captures stdout/stderr and returns ChildProcessResult.
 
-### Mantra Input Types
+### Meditation Input Types
 
-Each mantra element must have ONE of:
+Each meditation element must have ONE of:
+
 - **text** (+ optional voice_id, speed) - Sent to ElevenLabs for TTS
 - **pause_duration** - Generates silence in seconds
 - **sound_file** - Pre-existing MP3 filename (full path constructed from PATH_MP3_SOUND_FILES + filename)
@@ -77,7 +80,8 @@ Each mantra element must have ONE of:
 
 ### File Path Parsing
 
-When saving Mantra records (mantraManager.ts), the full path from AudioConcatenator is parsed:
+When saving Meditation records (meditationsManager.ts), the full path from AudioConcatenator is parsed:
+
 - Input: `/path/to/output_20260202_153045.mp3`
 - **filePath**: `/path/to/` (directory with trailing slash)
 - **filename**: `output_20260202_153045.mp3` (basename)
@@ -86,6 +90,7 @@ When saving Mantra records (mantraManager.ts), the full path from AudioConcatena
 ## Critical Environment Variables
 
 Required on startup (validated in onStartUp.ts):
+
 - `PATH_MP3_SOUND_FILES` - Directory containing pre-existing MP3 files
 - `PATH_USER_ELEVENLABS_CSV_FILES` - Directory for ElevenLabs CSV generation
 - `PATH_AUDIO_CSV_FILE` - Directory for AudioConcatenator CSV generation
@@ -107,7 +112,7 @@ src/
 │   ├── queueManager.ts          # Queue CRUD operations
 │   ├── elevenLabsHandler.ts     # ElevenLabs workflow
 │   ├── audioConcatenatorHandler.ts  # AudioConcatenator workflow
-│   ├── mantraManager.ts         # Mantra database operations
+│   ├── meditationsManager.ts         # Meditation database operations
 │   ├── workflowOrchestrator.ts  # Main pipeline coordinator
 │   ├── childProcessSpawner.ts   # Generic process spawner
 │   ├── fileManager.ts           # File operations
@@ -115,7 +120,7 @@ src/
 │   ├── errorHandler.ts          # Express error middleware
 │   └── errors.ts                # Custom error classes
 ├── routes/
-│   └── mantras.ts    # POST /mantras/new endpoint
+│   └── meditations.ts    # POST /meditations/new endpoint
 ├── types/
 │   └── index.ts      # TypeScript interfaces
 └── index.ts          # Express app entry
@@ -126,15 +131,17 @@ Keep modules focused on single responsibilities. When changing workflow steps, m
 ## Logging Standards
 
 Winston logger configured per docs/LOGGING_NODE_JS_V06.md:
+
 - **Development**: Console only
 - **Testing**: Console + rotating files
 - **Production**: Rotating files only
 - Log files: `PATH_TO_LOGS/[NAME_APP].log`
-- Child processes log to separate files using NAME_CHILD_PROCESS_* env vars
+- Child processes log to separate files using NAME*CHILD_PROCESS*\* env vars
 
 ## Error Handling
 
 Follows docs/ERROR_REQUIREMENTS.md:
+
 - Custom error classes in errors.ts (ValidationError, FileNotFoundError, DatabaseError)
 - Express error middleware in errorHandler.ts returns standardized JSON:
   ```json
@@ -151,21 +158,25 @@ Follows docs/ERROR_REQUIREMENTS.md:
 ## Database Schema Notes
 
 **Queue table**: Tracks workflow status with FIFO ordering
+
 - Status progression: queued → started → elevenlabs → concatenator → done
 - jobFilename stores the CSV filename for the request
 
-**Mantra table**: Stores final audio file metadata
+**Meditation table**: Stores final audio file metadata
+
 - Created AFTER AudioConcatenator completes, BEFORE queue marked "done"
 - visibility field has database default (not set by this service)
 
-**ContractUsersMantras**: Junction table linking users to their mantras
-- Created immediately after Mantra record
+**ContractUsersMeditations**: Junction table linking users to their meditations
+
+- Created immediately after Meditation record
 
 See docs/DATABASE_OVERVIEW.md for full schema.
 
 ## Testing
 
 Jest configured in test/ directory:
+
 - Test utilities in test/utils/testHelpers.ts
 - getOrCreateTestUser() - Gets admin user or creates test user
 - cleanupDatabaseRecords() - Deletes test queue records
@@ -174,12 +185,13 @@ Jest configured in test/ directory:
 
 ## Local Dependencies
 
-Mantrify01Db package installed from local file system:
+GoLightly02Db package installed from local file system:
+
 ```bash
-npm install file:/Users/nick/Documents/Mantrify01Db
+npm install file:/Users/nick/Documents/GoLightly02Db
 ```
 
-If making changes to Mantrify01Db models, rebuild that package first, then rebuild this one.
+If making changes to GoLightly02Db models, rebuild that package first, then rebuild this one.
 
 ## Key Documentation
 

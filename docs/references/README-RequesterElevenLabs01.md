@@ -4,7 +4,7 @@
 
 TypeScript application that converts text to speech using the ElevenLabs API. The application validates voice IDs and speed parameters, makes requests to ElevenLabs, and saves the resulting MP3 audio files with a structured naming convention. Includes environment-specific Winston logging with file rotation for development, testing, and production modes.
 
-This service was build to support the Mantrify Project.
+This service was build to support the GoLightly Project.
 
 ## Build and Run
 

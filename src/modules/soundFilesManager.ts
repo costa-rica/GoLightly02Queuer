@@ -1,28 +1,30 @@
-import logger from './logger';
-import { SoundFiles, ContractMantrasSoundFiles } from './database';
-import { MantraArrayElement } from '../types';
+import logger from "./logger";
+import { SoundFiles, ContractMeditationsSoundFiles } from "./database";
+import { MeditationArrayElement } from "../types";
 
 /**
- * Find SoundFiles IDs based on sound file filenames from mantra elements
- * @param mantraElements - Original mantra elements that may contain sound_file references
- * @returns Array of SoundFiles IDs that were referenced in the mantra
+ * Find SoundFiles IDs based on sound file filenames from meditation elements
+ * @param meditationElements - Original meditation elements that may contain sound_file references
+ * @returns Array of SoundFiles IDs that were referenced in the meditation
  */
-export async function findSoundFilesInMantra(
-  mantraElements: MantraArrayElement[]
+export async function findSoundFilesInMeditation(
+  meditationElements: MeditationArrayElement[],
 ): Promise<number[]> {
-  logger.info('Finding sound files referenced in mantra elements');
+  logger.info("Finding sound files referenced in meditation elements");
 
-  // Filter mantra elements to only those with sound_file
-  const soundFileElements = mantraElements.filter(
-    (element) => element.sound_file && element.sound_file.trim() !== ''
+  // Filter meditation elements to only those with sound_file
+  const soundFileElements = meditationElements.filter(
+    (element) => element.sound_file && element.sound_file.trim() !== "",
   );
 
   if (soundFileElements.length === 0) {
-    logger.info('No sound files found in mantra elements');
+    logger.info("No sound files found in meditation elements");
     return [];
   }
 
-  logger.info(`Found ${soundFileElements.length} sound file references in mantra elements`);
+  logger.info(
+    `Found ${soundFileElements.length} sound file references in meditation elements`,
+  );
 
   const soundFileIds: number[] = [];
 
@@ -38,7 +40,9 @@ export async function findSoundFilesInMantra(
 
       if (soundFile) {
         soundFileIds.push(soundFile.id);
-        logger.info(`Found SoundFiles record ${soundFile.id} for filename: ${filename}`);
+        logger.info(
+          `Found SoundFiles record ${soundFile.id} for filename: ${filename}`,
+        );
       } else {
         logger.warn(`SoundFiles record not found for filename: ${filename}`);
       }
@@ -50,47 +54,58 @@ export async function findSoundFilesInMantra(
 
   logger.info(`Successfully found ${soundFileIds.length} SoundFiles records`);
 
-  // Deduplicate sound file IDs (same sound file may be used multiple times in one mantra)
+  // Deduplicate sound file IDs (same sound file may be used multiple times in one meditation)
   const uniqueSoundFileIds = Array.from(new Set(soundFileIds));
 
   if (uniqueSoundFileIds.length < soundFileIds.length) {
-    logger.info(`Deduplicated ${soundFileIds.length} references to ${uniqueSoundFileIds.length} unique SoundFiles`);
+    logger.info(
+      `Deduplicated ${soundFileIds.length} references to ${uniqueSoundFileIds.length} unique SoundFiles`,
+    );
   }
 
   return uniqueSoundFileIds;
 }
 
 /**
- * Link Mantra to SoundFiles records via ContractMantrasSoundFiles
- * @param mantraId - ID of the Mantra record
+ * Link Meditation to SoundFiles records via ContractMeditationsSoundFiles
+ * @param meditationId - ID of the Meditation record
  * @param soundFileIds - Array of SoundFiles IDs to link
- * @returns Array of created ContractMantrasSoundFiles record IDs
+ * @returns Array of created ContractMeditationsSoundFiles record IDs
  */
-export async function linkMantraToSoundFiles(
-  mantraId: number,
-  soundFileIds: number[]
+export async function linkMeditationToSoundFiles(
+  meditationId: number,
+  soundFileIds: number[],
 ): Promise<number[]> {
-  logger.info(`Linking Mantra ${mantraId} to ${soundFileIds.length} SoundFiles records`);
+  logger.info(
+    `Linking Meditation ${meditationId} to ${soundFileIds.length} SoundFiles records`,
+  );
 
   const createdIds: number[] = [];
 
   // Create a contract record for each SoundFiles ID
   for (const soundFilesId of soundFileIds) {
     try {
-      const contract = await ContractMantrasSoundFiles.create({
-        mantraId,
+      const contract = await ContractMeditationsSoundFiles.create({
+        meditationId,
         soundFilesId,
       });
 
       createdIds.push(contract.id);
-      logger.info(`Created ContractMantrasSoundFiles record ${contract.id}: mantraId=${mantraId}, soundFilesId=${soundFilesId}`);
+      logger.info(
+        `Created ContractMeditationsSoundFiles record ${contract.id}: meditationId=${meditationId}, soundFilesId=${soundFilesId}`,
+      );
     } catch (error) {
-      logger.error(`Failed to create ContractMantrasSoundFiles for mantraId=${mantraId}, soundFilesId=${soundFilesId}:`, error);
+      logger.error(
+        `Failed to create ContractMeditationsSoundFiles for meditationId=${meditationId}, soundFilesId=${soundFilesId}:`,
+        error,
+      );
       throw error;
     }
   }
 
-  logger.info(`Successfully linked Mantra ${mantraId} to ${createdIds.length} SoundFiles records`);
+  logger.info(
+    `Successfully linked Meditation ${meditationId} to ${createdIds.length} SoundFiles records`,
+  );
 
   return createdIds;
 }

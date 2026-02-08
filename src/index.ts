@@ -1,14 +1,14 @@
-import dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
+import dotenv from "dotenv";
+import express, { Request, Response } from "express";
 
 // Load environment variables first
 dotenv.config();
 
 // Import logger after dotenv (logger validates env vars)
-import logger from './modules/logger';
-import { errorHandler, notFoundHandler } from './modules/errorHandler';
-import mantrasRouter from './routes/mantras';
-import { initializeApp } from './modules/onStartUp';
+import logger from "./modules/logger";
+import { errorHandler, notFoundHandler } from "./modules/errorHandler";
+import meditationsRouter from "./routes/meditations";
+import { initializeApp } from "./modules/onStartUp";
 
 // Create Express app
 const app = express();
@@ -19,21 +19,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Placeholder route
-app.get('/', (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({
-    message: 'Mantrify01Queuer API',
-    status: 'running',
-    version: '1.0.0'
+    message: "GoLightly01Queuer API",
+    status: "running",
+    version: "1.0.0",
   });
 });
 
 // Health check route
-app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok' });
+app.get("/health", (req: Request, res: Response) => {
+  res.json({ status: "ok" });
 });
 
 // API Routes
-app.use('/mantras', mantrasRouter);
+app.use("/meditations", meditationsRouter);
 
 // 404 handler for undefined routes
 app.use(notFoundHandler);
@@ -53,7 +53,7 @@ async function startServer() {
       logger.info(`Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {
-    logger.error('Failed to start server:', error);
+    logger.error("Failed to start server:", error);
     // Implement async IIFE pattern for early exit
     await new Promise((resolve) => setTimeout(resolve, 100));
     process.exit(1);

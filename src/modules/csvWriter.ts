@@ -2,7 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { stringify } from "csv-stringify/sync";
 import logger from "./logger";
-import { ElevenLabsCsvRow, AudioConcatenatorCsvRow, MantraArrayElement } from "../types";
+import {
+  ElevenLabsCsvRow,
+  AudioConcatenatorCsvRow,
+  MeditationArrayElement,
+} from "../types";
 
 /**
  * Write ElevenLabs CSV file
@@ -102,14 +106,14 @@ export function generateCsvFilename(prefix: string): string {
 }
 
 /**
- * Write job CSV file with mantra array data to PATH_QUEUER/YYYYMMDD/ subdirectory
+ * Write job CSV file with meditation array data to PATH_QUEUER/YYYYMMDD/ subdirectory
  * @param jobFilename - The job filename (e.g., job_user1_20260207_012827.csv)
- * @param mantraElements - Array of mantra elements to write
+ * @param meditationElements - Array of meditation elements to write
  * @returns Full path to the created CSV file
  */
 export function writeJobCsv(
   jobFilename: string,
-  mantraElements: MantraArrayElement[],
+  meditationElements: MeditationArrayElement[],
 ): string {
   // Validate PATH_QUEUER environment variable
   if (!process.env.PATH_QUEUER) {
@@ -129,7 +133,7 @@ export function writeJobCsv(
   const outputPath = path.join(outputDir, jobFilename);
 
   logger.info(
-    `Writing job CSV with ${mantraElements.length} elements to: ${outputPath}`,
+    `Writing job CSV with ${meditationElements.length} elements to: ${outputPath}`,
   );
 
   // Ensure date subdirectory exists
@@ -138,10 +142,17 @@ export function writeJobCsv(
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // Convert mantra elements to CSV format
-  const csvContent = stringify(mantraElements, {
+  // Convert meditation elements to CSV format
+  const csvContent = stringify(meditationElements, {
     header: true,
-    columns: ["id", "text", "voice_id", "speed", "pause_duration", "sound_file"],
+    columns: [
+      "id",
+      "text",
+      "voice_id",
+      "speed",
+      "pause_duration",
+      "sound_file",
+    ],
   });
 
   // Write to file

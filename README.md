@@ -1,13 +1,13 @@
-# Mantrify01Queuer
+# GoLightly01Queuer
 
-TypeScript Express API that orchestrates mantra audio creation using SQLite/Sequelize database with queue management. Coordinates RequesterElevenLabs01 and AudioFileConcatenator01 microservices to generate custom meditation mantras. Processes requests in FIFO order and manages queue status throughout the workflow.
+TypeScript Express API that orchestrates meditation audio creation using SQLite/Sequelize database with queue management. Coordinates RequesterElevenLabs01 and AudioFileConcatenator01 microservices to generate custom meditation meditations. Processes requests in FIFO order and manages queue status throughout the workflow.
 
 Tech Stack: TypeScript, Express.js, SQLite, Sequelize, Winston
 
 ## Setup
 
-1. Ensure the local dependency exists at `/Users/nick/Documents/Mantrify01Db`
-   - To install directly (locally): `npm install file:/Users/nick/Documents/Mantrify01Db`
+1. Ensure the local dependency exists at `/Users/nick/Documents/GoLightly02Db`
+   - To install directly (locally): `npm install file:/Users/nick/Documents/GoLightly02Db`
 2. Install dependencies: `npm install`
 3. Build the project: `npm run build`
 4. Ensure all required directories exist (see .env section below)
@@ -28,23 +28,23 @@ The API will be available at `http://localhost:3000`.
 
 ### API Endpoints
 
-#### POST /mantras/new
+#### POST /meditations/new
 
-Create a new mantra from CSV file or array.
+Create a new meditation from CSV file or array.
 
 Request Body:
 
 ```json
 {
   "userId": 1,
-  "mantraArray": [
+  "meditationArray": [
     {
       "id": "1",
       "pause_duration": "3.0"
     },
     {
       "id": "2",
-      "text": "This is my mantra",
+      "text": "This is my meditation",
       "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
       "speed": "0.9"
     }
@@ -57,7 +57,7 @@ OR with CSV file:
 ```json
 {
   "userId": 1,
-  "filenameCsv": "mantra_input.csv"
+  "filenameCsv": "meditation_input.csv"
 }
 ```
 
@@ -68,7 +68,7 @@ Response:
   "success": true,
   "queueId": 123,
   "finalFilePath": "/path/to/output_20260202_153045.mp3",
-  "message": "Mantra created successfully"
+  "message": "Meditation created successfully"
 }
 ```
 
@@ -79,7 +79,7 @@ Health check endpoint.
 ## Project Structure
 
 ```
-Mantrify01Queuer/
+GoLightly01Queuer/
 ├── src/
 │   ├── modules/
 │   │   ├── audioConcatenatorHandler.ts  # AudioConcatenator workflow
@@ -96,7 +96,7 @@ Mantrify01Queuer/
 │   │   ├── validator.ts                 # Request validation
 │   │   └── workflowOrchestrator.ts      # Main workflow orchestrator
 │   ├── routes/
-│   │   └── mantras.ts                   # Mantras API routes
+│   │   └── meditations.ts                   # Meditations API routes
 │   ├── types/
 │   │   └── index.ts                     # TypeScript type definitions
 │   └── index.ts                         # Express app entry point
@@ -119,17 +119,17 @@ Mantrify01Queuer/
 ## .env
 
 ```
-NAME_APP=Mantrify01Queuer
+NAME_APP=GoLightly01Queuer
 PORT=3000
 NODE_ENV=testing
-PATH_PROJECT_RESOURCES=/Users/nick/Documents/_project_resources/Mantrify/
-PATH_QUEUER=/Users/nick/Documents/_project_resources/Mantrify/queuer/
+PATH_PROJECT_RESOURCES=/Users/nick/Documents/_project_resources/GoLightly/
+PATH_QUEUER=/Users/nick/Documents/_project_resources/GoLightly/queuer/
 JWT_SECRET=JWT_SECRET
-ADMIN_EMAIL=admin@mantrify.com
+ADMIN_EMAIL=admin@golightly.com
 
 # Database
-NAME_DB=mantrify01.db
-PATH_DATABASE=/Users/nick/Documents/_project_resources/Mantrify/database/
+NAME_DB=golightly01.db
+PATH_DATABASE=/Users/nick/Documents/_project_resources/GoLightly/database/
 
 # Logs
 PATH_TO_LOGS=/Users/nick/Documents/_logs
@@ -138,15 +138,15 @@ PATH_TO_LOGS=/Users/nick/Documents/_logs
 
 # Child Process: ElevenLabs
 NAME_CHILD_PROCESS_ELEVENLABS=RequesterElevenLabs01
-PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses
-PATH_USER_ELEVENLABS_CSV_FILES=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_user_csv_files
+PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT=/Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses
+PATH_USER_ELEVENLABS_CSV_FILES=/Users/nick/Documents/_project_resources/GoLightly/eleven_labs_user_csv_files
 API_KEY_ELEVEN_LABS=your_api_key_here
 
 # Child Process: Audio Processing
 NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR=AudioFileConcatenator01
-PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/Mantrify/audio_concatenator_input
-PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/audio_results
-PATH_MP3_SOUND_FILES=/Users/nick/Documents/_project_resources/Mantrify/mp3_sound_files
+PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/GoLightly/audio_concatenator_input
+PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/GoLightly/audio_results
+PATH_MP3_SOUND_FILES=/Users/nick/Documents/_project_resources/GoLightly/mp3_sound_files
 
 # Child Process Paths
 PATH_TO_ELEVENLABS_SERVICE=/Users/nick/Documents/RequesterElevenLabs01
@@ -164,7 +164,7 @@ Format:
 ```csv
 id,text,voice_id,speed,pause_duration,sound_file
 1,,,,3.0,
-2,This is my mantra,Xb7hH8MSUJpSbSDYk0k2,0.9,,
+2,This is my meditation,Xb7hH8MSUJpSbSDYk0k2,0.9,,
 3,Another phrase,Xb7hH8MSUJpSbSDYk0k2,1.0,,
 4,,,,2.5,
 ```
@@ -187,7 +187,7 @@ Rules:
 
 Location: `PATH_MP3_SOUND_FILES/`
 
-This directory contains pre-existing MP3 audio files that can be referenced in the `sound_file` field of mantra requests. When a `sound_file` value is provided, the system constructs the full path by joining `PATH_MP3_SOUND_FILES` with the filename and includes it in the audio concatenation workflow.
+This directory contains pre-existing MP3 audio files that can be referenced in the `sound_file` field of meditation requests. When a `sound_file` value is provided, the system constructs the full path by joining `PATH_MP3_SOUND_FILES` with the filename and includes it in the audio concatenation workflow.
 
 Example: If `sound_file` is set to `bell.mp3`, the system will look for the file at `PATH_MP3_SOUND_FILES/bell.mp3`.
 
@@ -222,7 +222,7 @@ Logging: Logs to `PATH_TO_LOGS/AudioFileConcatenator01.log`
 
 ## Workflow
 
-1. Receive POST /mantras/new request with `userId` and either `filenameCsv` or `mantraArray`
+1. Receive POST /meditations/new request with `userId` and either `filenameCsv` or `meditationArray`
 2. Parse input and validate structure
 3. Create queue record (status: "queued")
 4. Update status to "started"

@@ -1,12 +1,14 @@
-import { Queue, User } from '../../src/modules/database';
-import { deleteFiles } from '../../src/modules/fileManager';
-import logger from '../../src/modules/logger';
+import { Queue, User } from "../../src/modules/database";
+import { deleteFiles } from "../../src/modules/fileManager";
+import logger from "../../src/modules/logger";
 
 /**
  * Clean up database records created during tests
  * @param queueIds - Array of queue IDs to delete
  */
-export async function cleanupDatabaseRecords(queueIds: number[]): Promise<void> {
+export async function cleanupDatabaseRecords(
+  queueIds: number[],
+): Promise<void> {
   for (const id of queueIds) {
     try {
       await Queue.destroy({ where: { id } });
@@ -50,8 +52,8 @@ export async function getOrCreateTestUser(): Promise<any> {
 
   // If no users exist, create a test user
   testUser = await User.create({
-    email: 'test@mantrify.com',
-    password: '$2b$10$test.hash.here',
+    email: "test@golightly.com",
+    password: "$2b$10$test.hash.here",
     isEmailVerified: true,
     isAdmin: false,
   });
@@ -61,25 +63,25 @@ export async function getOrCreateTestUser(): Promise<any> {
 }
 
 /**
- * Sample mantra array for testing
+ * Sample meditation array for testing
  */
-export function getSampleMantraArray() {
+export function getSampleMeditationArray() {
   return [
     {
-      id: '1',
-      text: 'This is a test mantra',
-      voice_id: 'Xb7hH8MSUJpSbSDYk0k2',
-      speed: '1.0',
+      id: "1",
+      text: "This is a test meditation",
+      voice_id: "Xb7hH8MSUJpSbSDYk0k2",
+      speed: "1.0",
     },
     {
-      id: '2',
-      pause_duration: '2.0',
+      id: "2",
+      pause_duration: "2.0",
     },
     {
-      id: '3',
-      text: 'Another test phrase',
-      voice_id: 'Xb7hH8MSUJpSbSDYk0k2',
-      speed: '0.9',
+      id: "3",
+      text: "Another test phrase",
+      voice_id: "Xb7hH8MSUJpSbSDYk0k2",
+      speed: "0.9",
     },
   ];
 }

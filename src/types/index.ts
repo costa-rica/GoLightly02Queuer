@@ -1,5 +1,10 @@
 // Queue status type
-export type QueueStatus = 'queued' | 'started' | 'elevenlabs' | 'concatenator' | 'done';
+export type QueueStatus =
+  | "queued"
+  | "started"
+  | "elevenlabs"
+  | "concatenator"
+  | "done";
 
 // Queue record interface (matches database schema)
 export interface QueueRecord {
@@ -11,15 +16,15 @@ export interface QueueRecord {
   updatedAt?: Date;
 }
 
-// Mantra request body interface
-export interface MantraRequestBody {
+// Meditation request body interface
+export interface MeditationRequestBody {
   userId: number;
   filenameCsv?: string;
-  mantraArray?: MantraArrayElement[];
+  meditationArray?: MeditationArrayElement[];
 }
 
-// Mantra array element (from request body)
-export interface MantraArrayElement {
+// Meditation array element (from request body)
+export interface MeditationArrayElement {
   id: string | number;
   text?: string;
   voice_id?: string;

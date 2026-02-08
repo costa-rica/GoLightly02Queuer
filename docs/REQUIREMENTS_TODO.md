@@ -1,6 +1,6 @@
-# Mantrify01Queuer - Implementation TODO List
+# GoLightly01Queuer - Implementation TODO List
 
-This TODO list breaks down the implementation of Mantrify01Queuer into manageable phases. Check off items as `[x]` when completed. Commit changes to git after completing each phase.
+This TODO list breaks down the implementation of GoLightly01Queuer into manageable phases. Check off items as `[x]` when completed. Commit changes to git after completing each phase.
 
 ## Phase 1: Project Foundation
 
@@ -36,16 +36,16 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 2: Database Integration
 
-- [x] Install Mantrify01Db package
-  - [x] Install from /Users/nick/Documents/Mantrify01Db
-  - [x] Run: `npm install file:/Users/nick/Documents/Mantrify01Db`
+- [x] Install GoLightly02Db package
+  - [x] Install from /Users/nick/Documents/GoLightly02Db
+  - [x] Run: `npm install file:/Users/nick/Documents/GoLightly02Db`
   - [x] Verify package appears in package.json dependencies
 - [x] Create database module in `src/modules/database.ts`
-  - [x] Import Mantrify01Db
+  - [x] Import GoLightly02Db
   - [x] Initialize database connection
   - [x] Export database instance and models
 - [x] Test database connection
-  - [x] Verify connection to Mantrify01Db database
+  - [x] Verify connection to GoLightly02Db database
   - [x] Verify Queue table is accessible
   - [x] Test basic CRUD operations on Queue table
 - [x] Create Queue model interface in `src/types/index.ts`
@@ -76,8 +76,8 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 ## Phase 4: Core Type Definitions
 
 - [x] Define types in `src/types/index.ts`
-  - [x] MantraRequestBody interface (userId required, plus filenameCsv | mantraArray)
-  - [x] MantraArrayElement interface (id, text, voice_id, speed, pause_duration, sound_file)
+  - [x] MeditationRequestBody interface (userId required, plus filenameCsv | meditationArray)
+  - [x] MeditationArrayElement interface (id, text, voice_id, speed, pause_duration, sound_file)
   - [x] ElevenLabsCsvRow interface (id, text, voice_id, speed)
   - [x] AudioConcatenatorCsvRow interface (id, audio_file_name_and_path, pause_duration)
   - [x] QueueRecord interface
@@ -88,7 +88,7 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 - [x] Create CSV parser module in `src/modules/csvParser.ts`
   - [x] Install csv-parse: `npm install csv-parse`
   - [x] Create function to read CSV file from filenameCsv
-  - [x] Create function to parse mantraArray
+  - [x] Create function to parse meditationArray
   - [x] Return normalized data structure
   - [x] Handle validation and errors
 - [x] Create CSV writer module in `src/modules/csvWriter.ts`
@@ -146,7 +146,7 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 - [x] Create workflow orchestrator in `src/modules/workflowOrchestrator.ts`
   - [x] Create main orchestration function
-  - [x] Step 1: Parse input (filenameCsv or mantraArray)
+  - [x] Step 1: Parse input (filenameCsv or meditationArray)
   - [x] Step 2: Create and save queue record (status: "queued")
   - [x] Step 3: Update status to "started"
   - [x] Step 4: Generate ElevenLabs CSV
@@ -164,17 +164,17 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 ## Phase 9: API Routes
 
-- [x] Create mantras router in `src/routes/mantras.ts`
+- [x] Create meditations router in `src/routes/meditations.ts`
   - [x] Import express Router
   - [x] Create POST /new endpoint
-  - [x] Validate request body (filenameCsv XOR mantraArray, plus userId)
+  - [x] Validate request body (filenameCsv XOR meditationArray, plus userId)
   - [x] Extract userId from request body
   - [x] Call workflow orchestrator
   - [x] Return success response with job details
   - [x] Handle and format errors per ERROR_REQUIREMENTS.md
 - [x] Integrate router in src/index.ts
-  - [x] Import mantras router
-  - [x] Mount router at /mantras path
+  - [x] Import meditations router
+  - [x] Mount router at /meditations path
   - [x] Test route is accessible
 
 ## Phase 10: Error Handling
@@ -202,14 +202,14 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 ## Phase 11: Request Validation
 
 - [x] Create validation module in `src/modules/validator.ts`
-  - [x] Validate POST /mantras/new body structure
-  - [x] Ensure filenameCsv XOR mantraArray (not both)
+  - [x] Validate POST /meditations/new body structure
+  - [x] Ensure filenameCsv XOR meditationArray (not both)
   - [x] Validate filenameCsv points to existing file
-  - [x] Validate mantraArray structure if present
+  - [x] Validate meditationArray structure if present
   - [x] Validate CSV row format (id, text, voice_id, speed, pause_duration, sound_file)
   - [x] Validate field types and constraints
   - [x] Return detailed validation errors
-- [x] Integrate validation in mantras route
+- [x] Integrate validation in meditations route
   - [x] Call validation before workflow
   - [x] Return 400 errors for validation failures
 
@@ -224,13 +224,13 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 - [x] Create test utilities in `test/utils/`
   - [x] Create database cleanup helper (delete queue records)
   - [x] Create file cleanup helper (delete CSV and MP3 files)
-  - [x] Create test data generators (sample mantraArray data)
+  - [x] Create test data generators (sample meditationArray data)
   - [x] Create shared test configuration
 - [ ] Create ElevenLabs integration test in `test/elevenlabs.test.ts`
   - [ ] Set up test with database connection
-  - [ ] Create test mantraArray with short text (e.g., "Test mantra one")
+  - [ ] Create test meditationArray with short text (e.g., "Test meditation one")
   - [ ] Include userId in test request body
-  - [ ] Call workflow orchestrator with mantraArray
+  - [ ] Call workflow orchestrator with meditationArray
   - [ ] Verify queue record created in database
   - [ ] Verify ElevenLabs child process runs successfully
   - [ ] Verify MP3 file created at expected path
@@ -241,10 +241,10 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
   - [ ] Clean up: delete all generated MP3 files from microservices
 - [ ] Create AudioConcatenator integration test in `test/audioConcatenator.test.ts`
   - [ ] Set up test with database connection
-  - [ ] Create test mantraArray using output from ElevenLabs test
+  - [ ] Create test meditationArray using output from ElevenLabs test
   - [ ] Include userId in test request body
   - [ ] Include pause_duration to test silence generation
-  - [ ] Call workflow orchestrator with mantraArray
+  - [ ] Call workflow orchestrator with meditationArray
   - [ ] Verify queue record created in database
   - [ ] Verify ElevenLabs child process runs (for any text entries)
   - [ ] Verify AudioConcatenator child process runs successfully
@@ -256,7 +256,7 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
   - [ ] Clean up: delete temporary silence files created by AudioConcatenator
 - [ ] Create end-to-end test in `test/e2e.test.ts`
   - [ ] Set up test with database connection
-  - [ ] Test complete workflow from mantraArray to final MP3
+  - [ ] Test complete workflow from meditationArray to final MP3
   - [ ] Include multiple text entries, pauses, and optional sound files
   - [ ] Verify all queue status transitions
   - [ ] Verify all generated files exist
@@ -275,7 +275,7 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 - [ ] Manual testing - single request with filenameCsv
   - [ ] Create test CSV file in PATH_QUEUER/user_request_csv_files/
-  - [ ] POST to /mantras/new with filenameCsv
+  - [ ] POST to /meditations/new with filenameCsv
   - [ ] Verify queue record created
   - [ ] Verify ElevenLabs CSV generated correctly
   - [ ] Verify ElevenLabs child process runs
@@ -284,8 +284,8 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
   - [ ] Verify final MP3 file created
   - [ ] Verify queue status updated to "done"
   - [ ] Verify logs are complete
-- [ ] Manual testing - single request with mantraArray
-  - [ ] POST to /mantras/new with mantraArray
+- [ ] Manual testing - single request with meditationArray
+  - [ ] POST to /meditations/new with meditationArray
   - [ ] Verify same workflow completes successfully
 - [ ] Manual testing - queue processing
   - [ ] Submit multiple requests quickly
@@ -311,7 +311,7 @@ This TODO list breaks down the implementation of Mantrify01Queuer into manageabl
 
 - [x] Create README.md following docs/README-format.md
   - [x] Project Overview section (TypeScript + Express + SQLite)
-  - [x] Setup section (include Mantrify01Db installation)
+  - [x] Setup section (include GoLightly02Db installation)
   - [x] Usage section (API endpoint examples)
   - [x] Project Structure section (tree view)
   - [x] .env section (list all variables)
@@ -344,14 +344,14 @@ If any paths don't exist, they should be created during Phase 1.
 
 ### Custom Package Dependencies
 
-- Mantrify01Db: Located at /Users/nick/Documents/Mantrify01Db, install with `npm install file:/Users/nick/Documents/Mantrify01Db`
+- GoLightly02Db: Located at /Users/nick/Documents/GoLightly02Db, install with `npm install file:/Users/nick/Documents/GoLightly02Db`
 - RequesterElevenLabs01: Located at /Users/nick/Documents/RequesterElevenLabs01 (PATH_TO_ELEVENLABS_SERVICE)
 - AudioFileConcatenator01: Located at /Users/nick/Documents/AudioFileConcatenator01 (PATH_TO_AUDIO_FILE_CONCATENATOR)
 
 ### Key Workflow Decisions
 
 - CSV files generated for child processes should be stored in appropriate subdirectories of PATH_QUEUER
-- Child process log files should use NAME_CHILD_PROCESS_* environment variables
+- Child process log files should use NAME*CHILD_PROCESS*\* environment variables
 - Queue table updates should happen synchronously to maintain FIFO order
 - Error handling should gracefully handle child process failures and update queue status
 - userId is passed in the request body (not from JWT/authentication)
@@ -359,7 +359,7 @@ If any paths don't exist, they should be created during Phase 1.
 
 ### Testing Approach
 
-- Jest tests simulate API requests with mantraArray format
+- Jest tests simulate API requests with meditationArray format
 - Tests use real database and create/cleanup queue records
 - ElevenLabs test uses short text for quick execution
 - AudioConcatenator test uses ElevenLabs test output file

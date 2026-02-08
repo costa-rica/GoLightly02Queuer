@@ -1,8 +1,8 @@
-# Mantras
+# Meditations
 
-## POST /mantras/new
+## POST /meditations/new
 
-Creates a new mantra by orchestrating text-to-speech generation and audio concatenation. Accepts either a CSV filename or a mantra array defining the audio elements to create.
+Creates a new meditation by orchestrating text-to-speech generation and audio concatenation. Accepts either a CSV filename or a meditation array defining the audio elements to create.
 
 Authentication is not required.
 
@@ -10,15 +10,15 @@ Authentication is not required.
 
 Request body (JSON):
 
-- userId (required): Positive integer identifying the user creating the mantra
+- userId (required): Positive integer identifying the user creating the meditation
 - filenameCsv (optional): String filename of CSV file in PATH_QUEUER/user_request_csv_files directory
-- mantraArray (optional): Array of mantra element objects (see structure below)
+- meditationArray (optional): Array of meditation element objects (see structure below)
 
-Note: Either filenameCsv or mantraArray must be provided, but not both.
+Note: Either filenameCsv or meditationArray must be provided, but not both.
 
-#### Mantra Array Element Structure
+#### Meditation Array Element Structure
 
-Each element in mantraArray must contain:
+Each element in meditationArray must contain:
 
 - id (required): Unique identifier for the element (string or number)
 - One of the following (mutually exclusive with sound_file):
@@ -28,14 +28,14 @@ Each element in mantraArray must contain:
   - pause_duration (optional): Duration of silence in seconds (number)
 - sound_file (optional): Filename of pre-existing MP3 in PATH_MP3_SOUND_FILES directory (cannot be used with text, voice_id, speed, or pause_duration)
 
-### Sample Request (with mantraArray)
+### Sample Request (with meditationArray)
 
 ```bash
-curl --location 'http://localhost:3000/mantras/new' \
+curl --location 'http://localhost:3000/meditations/new' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "userId": 1,
-  "mantraArray": [
+  "meditationArray": [
     {
       "id": 1,
       "text": "Welcome to your meditation session",
@@ -61,7 +61,7 @@ curl --location 'http://localhost:3000/mantras/new' \
 ### Sample Request (with filenameCsv)
 
 ```bash
-curl --location 'http://localhost:3000/mantras/new' \
+curl --location 'http://localhost:3000/meditations/new' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "userId": 1,
@@ -76,7 +76,7 @@ curl --location 'http://localhost:3000/mantras/new' \
   "success": true,
   "queueId": 42,
   "finalFilePath": "/path/to/output/20260203/output_20260203_153045.mp3",
-  "message": "Mantra created successfully"
+  "message": "Meditation created successfully"
 }
 ```
 
@@ -106,49 +106,49 @@ curl --location 'http://localhost:3000/mantras/new' \
 }
 ```
 
-#### Missing both filenameCsv and mantraArray (400)
+#### Missing both filenameCsv and meditationArray (400)
 
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Either filenameCsv or mantraArray must be provided",
+    "message": "Either filenameCsv or meditationArray must be provided",
     "status": 400
   }
 }
 ```
 
-#### Providing both filenameCsv and mantraArray (400)
+#### Providing both filenameCsv and meditationArray (400)
 
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Cannot provide both filenameCsv and mantraArray",
+    "message": "Cannot provide both filenameCsv and meditationArray",
     "status": 400
   }
 }
 ```
 
-#### Empty mantraArray (400)
+#### Empty meditationArray (400)
 
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "mantraArray cannot be empty",
+    "message": "meditationArray cannot be empty",
     "status": 400
   }
 }
 ```
 
-#### Invalid mantraArray element (400)
+#### Invalid meditationArray element (400)
 
 ```json
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "mantraArray validation failed",
+    "message": "meditationArray validation failed",
     "status": 400,
     "details": [
       {
@@ -200,8 +200,8 @@ The endpoint triggers a multi-stage asynchronous workflow:
 4. ElevenLabs text-to-speech generation (status: "elevenlabs")
 5. ElevenLabsFiles database records creation
 6. AudioConcatenator file merging (status: "concatenator")
-7. Mantra database record creation
-8. ContractUsersMantras and ContractMantrasElevenLabsFiles linking
+7. Meditation database record creation
+8. ContractUsersMeditations and ContractMeditationsElevenLabsFiles linking
 9. Queue status update to "done"
 
 The queueId returned in the response can be used to track the job status in the Queue table.

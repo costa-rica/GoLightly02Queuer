@@ -1,8 +1,8 @@
-# Mantrify01Queuer Tests
+# GoLightly01Queuer Tests
 
 ## Overview
 
-This directory contains Jest integration tests for the Mantrify01Queuer application. The tests verify the complete workflow from API request through child process execution to final file generation.
+This directory contains Jest integration tests for the GoLightly01Queuer application. The tests verify the complete workflow from API request through child process execution to final file generation.
 
 ## Test Structure
 
@@ -32,10 +32,10 @@ Tests the ElevenLabs workflow in isolation:
 1. **Setup**
    - Initialize database connection
    - Get or create test user
-   - Prepare test mantraArray with short text
+   - Prepare test meditationArray with short text
 
 2. **Test Steps**
-   - Call `orchestrateMantraCreation()` with mantraArray containing text
+   - Call `orchestrateMeditationCreation()` with meditationArray containing text
    - Verify queue record created in database
    - Verify ElevenLabs child process runs successfully
    - Verify MP3 files created at expected paths
@@ -54,10 +54,10 @@ Tests the AudioConcatenator workflow:
    - Initialize database connection
    - Get or create test user
    - Run ElevenLabs workflow first to get test files
-   - Prepare mantraArray with pauses
+   - Prepare meditationArray with pauses
 
 2. **Test Steps**
-   - Call `orchestrateMantraCreation()` with full workflow
+   - Call `orchestrateMeditationCreation()` with full workflow
    - Verify ElevenLabs files created
    - Verify AudioConcatenator CSV generated correctly
    - Verify AudioConcatenator child process runs
@@ -77,13 +77,13 @@ Tests complete workflow with all features:
 1. **Setup**
    - Initialize database connection
    - Get or create test user
-   - Prepare comprehensive mantraArray with:
+   - Prepare comprehensive meditationArray with:
      - Multiple text entries
      - Pause durations
      - Optional sound files (if available)
 
 2. **Test Steps**
-   - Call `orchestrateMantraCreation()` with complete workflow
+   - Call `orchestrateMeditationCreation()` with complete workflow
    - Verify all queue status transitions:
      - queued → started → elevenlabs → concatenator → done
    - Verify all intermediate files generated
@@ -102,7 +102,7 @@ Located in `test/utils/testHelpers.ts`:
 - `cleanupDatabaseRecords(queueIds)` - Delete test queue records
 - `cleanupTestFiles(filePaths)` - Delete test files
 - `getOrCreateTestUser()` - Get/create test user for tests
-- `getSampleMantraArray()` - Generate sample test data
+- `getSampleMeditationArray()` - Generate sample test data
 
 ## Environment Variables
 
@@ -121,13 +121,14 @@ Tests use the same `.env` file as the application. Ensure all required environme
 3. **Database Cleanup**: All tests must delete queue records after completion.
 
 4. **Timeouts**: Child process tests may need extended timeouts:
+
    ```typescript
    jest.setTimeout(60000); // 60 seconds
    ```
 
 5. **Sequential Execution**: Some tests may need to run sequentially if they share resources:
    ```typescript
-   describe.serial('Sequential tests', () => {
+   describe.serial("Sequential tests", () => {
      // tests here
    });
    ```

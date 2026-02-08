@@ -1,12 +1,12 @@
-# Mantrify01Queuer Requirements
+# GoLightly01Queuer Requirements
 
-This TypeScript ExpressJS API that uses a sqlite/Sequelize database with a table called "queue" for queue management. It will receieve local requests from the Mantrify01API. This doucment will refer to the "queuer" as this application.
+This TypeScript ExpressJS API that uses a sqlite/Sequelize database with a table called "queue" for queue management. It will receieve local requests from the GoLightly01API. This doucment will refer to the "queuer" as this application.
 
-The main objective is to receive user input a POST request with a body that contains parameters for the mantra, then queue the request and process it providing the input to two child processes: the RequesterElevenLabs01 microservice and the AudioFileConcatenator01 microservice. In our docs/references/README-RequesterElevenLabs01.md and docs/references/README-AudioFileConcatenator01.md we have the details of the child processes.
+The main objective is to receive user input a POST request with a body that contains parameters for the meditation, then queue the request and process it providing the input to two child processes: the RequesterElevenLabs01 microservice and the AudioFileConcatenator01 microservice. In our docs/references/README-RequesterElevenLabs01.md and docs/references/README-AudioFileConcatenator01.md we have the details of the child processes.
 
-The queuer will also queue requests in a first in first out (FIFO) manner. This means that if there are multiple requests to make a new mantra, they will be processed in the order that they are received. This service will be responsible for updating the queue table with the status of each job.
+The queuer will also queue requests in a first in first out (FIFO) manner. This means that if there are multiple requests to make a new meditation, they will be processed in the order that they are received. This service will be responsible for updating the queue table with the status of each job.
 
-This service will be connected to the Mantrify01Db database.
+This service will be connected to the GoLightly02Db database.
 
 ## Build process
 
@@ -16,7 +16,7 @@ This requirements document will be the basis for the engineers "To Do" list to b
 
 We want the codebase to be modular and easy to maintain. Store the code in the src directory. Types can be stored in the src/types directory. But all other modules or helper functions should be stored in the src/modules directory. Make as many as needed to keep the code modularized so that if we need to replace a module or change a process it can be done by chaning a file and limit the effect on other parts of the codebase.
 
-The router file for this first version will be mantras.ts (subdomain: mantras) and it will be located in the src/routes directory.
+The router file for this first version will be meditations.ts (subdomain: meditations) and it will be located in the src/routes directory.
 
 In the future there might be other router files for different features.
 
@@ -25,11 +25,11 @@ In the future there might be other router files for different features.
 Use these .env variables for this app where needed. If additional .env variables are need bring them up in the todo list.
 
 ```
-NAME_APP=Mantrify01Queuer
+NAME_APP=GoLightly01Queuer
 PORT=3000
 NODE_ENV=testing
-PATH_PROJECT_RESOURCES=/Users/nick/Documents/_project_resources/Mantrify/
-PATH_QUEUER=/Users/nick/Documents/_project_resources/Mantrify/queuer/
+PATH_PROJECT_RESOURCES=/Users/nick/Documents/_project_resources/GoLightly/
+PATH_QUEUER=/Users/nick/Documents/_project_resources/GoLightly/queuer/
 JWT_SECRET=JWT_SECRET
 
 # Logs
@@ -40,20 +40,20 @@ PATH_TO_LOGS=/Users/nick/Documents/_logs
 # Child Process: ElevenLabs
 NAME_CHILD_PROCESS_ELEVENLABS=RequesterElevenLabs01
 PATH_TO_ELEVENLABS_SERVICE=/Users/nick/Documents/RequesterElevenLabs01
-PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses
-PATH_USER_ELEVENLABS_CSV_FILES=/Users/nick/Documents/_project_resources/Mantrify/eleven_labs_user_csv_files
+PATH_SAVED_ELEVENLABS_AUDIO_MP3_OUTPUT=/Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses
+PATH_USER_ELEVENLABS_CSV_FILES=/Users/nick/Documents/_project_resources/GoLightly/eleven_labs_user_csv_files
 API_KEY_ELEVEN_LABS=sk_1c2f764a3f6355b5d85c178ae2c2774795ab92e0409f5ad8
 
 # Child Process: Audio Processing
 NAME_CHILD_PROCESS_AUDIO_FILE_CONCATENATOR=AudioFileConcatenator01
 PATH_TO_AUDIO_FILE_CONCATENATOR=/Users/nick/Documents/AudioFileConcatenator01
-PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/Mantrify/audio_concatenator_input
-PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/Mantrify/audio_results
+PATH_AUDIO_CSV_FILE=/Users/nick/Documents/_project_resources/GoLightly/audio_concatenator_input
+PATH_MP3_OUTPUT=/Users/nick/Documents/_project_resources/GoLightly/audio_results
 ```
 
-# Database / Mantrify01Db
+# Database / GoLightly02Db
 
-The queuer will be connected to a SQLite / Sequelize database. using the custom package Mantrify01Db. See the docs/DATABASE_OVERVIEW_DRAFT.md file for the schema. This app will use the database to validate users to view the queue page and update the queue table.
+The queuer will be connected to a SQLite / Sequelize database. using the custom package GoLightly02Db. See the docs/DATABASE_OVERVIEW_DRAFT.md file for the schema. This app will use the database to validate users to view the queue page and update the queue table.
 
 ### Queue table
 
@@ -68,17 +68,17 @@ I want to try an approach using a table in the database called queue. The table 
 
 The docs/DATABASE_OVERVIEW_DRAFT.md file has the full schema.
 
-## Workflow to POST /mantras/new
+## Workflow to POST /meditations/new
 
-The objective of this api is to orchestrate the workflow of the first recieving a request to make a new mantra. The workflow is as follows:
+The objective of this api is to orchestrate the workflow of the first recieving a request to make a new meditation. The workflow is as follows:
 
-### 1. Receive request to make a new mantra.
+### 1. Receive request to make a new meditation.
 
-This will include a JSON body containing one of two elements in the first level: `filenameCsv` or `mantraArray`.
+This will include a JSON body containing one of two elements in the first level: `filenameCsv` or `meditationArray`.
 
 If `filenameCsv` is present, it will be a string containing the filename of a csv file. The file will be located in the subdirectory of the PATH_QUEUER .env variable path called user_request_csv_files.
 
-If `mantraArray` is present, it will be an array of objects.
+If `meditationArray` is present, it will be an array of objects.
 
 Both the csv file contents and the array elements objects will be similar. The key names in the array objects will match the field names below.
 
@@ -113,7 +113,7 @@ From the queuer's csv file we will have the information need to create the csv f
 - voice_id
 - speed
 
-The file name will be passed to the RequesterElevenLabs01 microservice to request a new mantra audio file.
+The file name will be passed to the RequesterElevenLabs01 microservice to request a new meditation audio file.
 
 The RequesterElevenLabs01 microservice will use a csv file that looks like this:
 
@@ -136,7 +136,7 @@ When RequesterElevenLabs01 finishes, it will have created files saved in the PAT
 2026-01-26 18:10:44 [info]: RequesterElevenLabs01 application started
 2026-01-26 18:10:44 [info]: Parsing command line arguments
 2026-01-26 18:10:44 [info]: Processing batch requests from CSV file: 0001.csv
-2026-01-26 18:10:44 [info]: Reading CSV file: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_user_csv_files/0001.csv
+2026-01-26 18:10:44 [info]: Reading CSV file: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_user_csv_files/0001.csv
 2026-01-26 18:10:44 [info]: Parsed 2 rows from CSV file
 2026-01-26 18:10:44 [info]: Processing row 0:
 2026-01-26 18:10:44 [info]:   Keys found: id, text, voice_id, speed
@@ -167,12 +167,12 @@ Processing request 1/2 (ID: 1)...
 2026-01-26 18:10:44 [info]: Making request to ElevenLabs API for text-to-speech conversion
 2026-01-26 18:10:44 [info]: Converting text to speech with voice_id: Xb7hH8MSUJpSbSDYk0k2, speed: 0.8
 2026-01-26 18:10:45 [info]: Text-to-speech conversion successful
-2026-01-26 18:10:45 [info]: Ensuring subdirectory exists: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126
+2026-01-26 18:10:45 [info]: Ensuring subdirectory exists: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126
 2026-01-26 18:10:45 [info]: Saving audio file: Alice_Third_time_20260126_181045.mp3
-2026-01-26 18:10:45 [info]: File path: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
-2026-01-26 18:10:45 [info]: Audio file saved successfully: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
-2026-01-26 18:10:45 [info]: Audio file created successfully: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
-✓ Success: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
+2026-01-26 18:10:45 [info]: File path: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
+2026-01-26 18:10:45 [info]: Audio file saved successfully: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
+2026-01-26 18:10:45 [info]: Audio file created successfully: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
+✓ Success: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Third_time_20260126_181045.mp3
 2026-01-26 18:10:45 [info]: Processing row 2/2 - ID: 2
 
 Processing request 2/2 (ID: 2)...
@@ -185,12 +185,12 @@ Processing request 2/2 (ID: 2)...
 2026-01-26 18:10:45 [info]: Making request to ElevenLabs API for text-to-speech conversion
 2026-01-26 18:10:45 [info]: Converting text to speech with voice_id: Xb7hH8MSUJpSbSDYk0k2, speed: 1.2
 2026-01-26 18:10:46 [info]: Text-to-speech conversion successful
-2026-01-26 18:10:46 [info]: Ensuring subdirectory exists: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126
+2026-01-26 18:10:46 [info]: Ensuring subdirectory exists: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126
 2026-01-26 18:10:46 [info]: Saving audio file: Alice_Yo_Yo_yo_20260126_181046.mp3
-2026-01-26 18:10:46 [info]: File path: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
-2026-01-26 18:10:46 [info]: Audio file saved successfully: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
-2026-01-26 18:10:46 [info]: Audio file created successfully: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
-✓ Success: /Users/nick/Documents/_project_resources/Mantrify/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
+2026-01-26 18:10:46 [info]: File path: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
+2026-01-26 18:10:46 [info]: Audio file saved successfully: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
+2026-01-26 18:10:46 [info]: Audio file created successfully: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
+✓ Success: /Users/nick/Documents/_project_resources/GoLightly/eleven_labs_responses/20260126/Alice_Yo_Yo_yo_20260126_181046.mp3
 2026-01-26 18:10:46 [info]: Batch processing completed: 2 successful, 0 failed
 
 ========== Batch Processing Summary ==========
@@ -243,4 +243,4 @@ Let’s add tests using jest that will use the database to create a request to e
 
 After the test is completed delete the database rows that is makes and the files created from running the microservices.
 
-These tests should be stored in a test/ directory at the root of the project. With that will get passed like a request is made from the API with the `mantraArray`.
+These tests should be stored in a test/ directory at the root of the project. With that will get passed like a request is made from the API with the `meditationArray`.

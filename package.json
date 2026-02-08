@@ -1,5 +1,5 @@
 {
-  "name": "mantrify01queuer",
+  "name": "golightly01queuer",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -22,7 +22,7 @@
     "csv-stringify": "^6.6.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mantrify01db": "file:../Mantrify01Db",
+    "golightly02db": "file:../GoLightly02Db",
     "winston": "^3.19.0"
   },
   "devDependencies": {
